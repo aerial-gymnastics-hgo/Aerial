@@ -1,0 +1,70 @@
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(_icons[_statusIndex], color: _colors[_statusIndex], size: 32),
+      onPressed: _toggleStatus,
+      tooltip: 'Marcar Asistencia',
+    );
+  }
+}
+
+class PulseGlowContainer extends StatefulWidget {
+  final Widget child;
+  final Color glowColor;
+
+  const PulseGlowContainer({
+    key,
+    required this.child,
+    required this.glowColor,
+  }) : super(key: key);
+
+  @override
+  State<PulseGlowContainer> createState() => _PulseGlowContainerState();
+}
+
+class _PulseGlowContainerState extends State<PulseGlowContainer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 4.0, end: 16.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: widget.glowColor.withOpacity(0.15),
+                blurRadius: _animation.value,
+                spreadRadius: _animation.value * 0.2,
+              ),
+            ],
+          ),
+          child: child,
+        );
+      },
+      child: widget.child,
+    );
+  }
+}

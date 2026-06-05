@@ -1,0 +1,32 @@
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('evaluations')
+              .where('studentId', isEqualTo: studentId)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Text(
+                    'Error al cargar el progreso: ${snapshot.error}',
+                    style: GoogleFonts.poppins(color: Colors.white70),
+                  ),
+                ),
+              );
+            }
+
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator(color: Colors.pinkAccent));
+            }
+
+            // Copiar los docs a una lista mutable y ordenarla en memoria por createdAt descendente
+            final evaluations = List<DocumentSnapshot>.from(snapshot.data!.docs);
+            evaluations.sort((a, b) {
+              final aTime = (a.data() as Map<String, dynamic>?)?['createdAt'] as Timestamp?;
+              final bTime = (b.data() as Map<String, dynamic>?)?['createdAt'] as Timestamp?;
+              if (aTime == null && bTime == null) return 0;
+              if (aTime == null) return 1;
+              if (bTime == null) return -1;
+              return bTime.compareTo(aTime);
+            });

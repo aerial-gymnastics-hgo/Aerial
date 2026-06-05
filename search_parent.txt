@@ -1,0 +1,18 @@
+        StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('evaluations')
+              .where('studentId', isEqualTo: studentId)
+              .orderBy('createdAt', descending: true)
+              .limit(10)
+              .snapshots(),
+          builder: (context, evalSnapshot) {
+            if (!evalSnapshot.hasData) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.pinkAccent),
+                ),
+              );
+            }
+
+            final evaluations = evalSnapshot.data!.docs;

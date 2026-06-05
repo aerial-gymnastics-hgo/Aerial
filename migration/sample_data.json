@@ -1,0 +1,106 @@
+{
+  "users": {
+    "admin_001": {
+      "name": "Admin Sistema",
+      "email": "admin@aerial.com",
+      "role": "admin",
+      "group": "Administración"
+    },
+    "coach_001": {
+      "name": "Entrenador Principal",
+      "email": "coach1@aerial.com",
+      "role": "coach",
+      "group": "General",
+      "colorHex": 4280391411
+    },
+    "student_001": {
+      "name": "Ana López",
+      "email": "ana.lopez@aerial.com",
+      "role": "student",
+      "group": "Avanzado",
+      "monthlyObjective": "Dominar mortal atrás",
+      "photoUrl": "https://i.pravatar.cc/150?u=student_001"
+    },
+    "parent_001": {
+      "name": "Familia López",
+      "email": "carlos.lopez@email.com",
+      "role": "parent",
+      "associatedStudentId": "student_001",
+      "emergencyContact": "555-0101"
+    }
+  },
+  "announcements": [
+    {
+      "title": "Nuevo Horario de Verano",
+      "message": "A partir del lunes, las clases vespertinas inician 30 min antes.",
+      "date": "_Timestamp_2026-05-01T10:00:00Z",
+      "targetRole": "all"
+    },
+    {
+      "title": "Evaluación de Niveles",
+      "message": "Mañana evaluación para pasar a Nivel 4.",
+      "date": "_Timestamp_2026-05-02T08:00:00Z",
+      "targetRole": "student"
+    }
+  ],
+  "events": [
+    {
+      "title": "Gala Anual de Gimnasia",
+      "date": "_Timestamp_2026-06-15T18:00:00Z",
+      "colorHex": 4294901760,
+      "targetRole": "all",
+      "type": "event",
+      "message": "Traje de gala obligatorio"
+    }
+  ],
+  "assignments": [
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "16:00",
+      "endTime": "17:30",
+      "groupId": "Principiantes 1",
+      "apparatus": "Piso",
+      "coachId": "coach_001"
+    }
+  ],
+  "rotations": [
+    {
+      "coachId": "coach_001",
+      "startTime": "_Timestamp_2026-05-02T16:00:00Z",
+      "endTime": "_Timestamp_2026-05-02T16:45:00Z",
+      "group": "Avanzado",
+      "apparatus": "Viga",
+      "focus": "Equilibrio estático"
+    }
+  ],
+  "attendance": [
+    {
+      "coachId": "coach_001",
+      "studentId": "student_001",
+      "status": "present",
+      "date": "2026-05-02",
+      "timestamp": "_ServerTimestamp_"
+    }
+  ],
+  "achievements": [
+    {
+      "title": "Flic-Flac Perfecto",
+      "date": "_Timestamp_2026-04-28T12:00:00Z",
+      "studentName": "Ana López",
+      "studentId": "student_001",
+      "groupName": "Avanzado",
+      "type": "skill"
+    }
+  ],
+  "trials": [
+    {
+      "parentName": "Maricela Ruiz",
+      "phone": "555-9876",
+      "email": "mruiz@email.com",
+      "childName": "Sofía Ruiz",
+      "childAge": 6,
+      "experienceLevel": "Ninguna",
+      "status": "pending"
+    }
+  ]
+}

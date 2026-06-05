@@ -1,0 +1,53 @@
+        StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('evaluations')
+              .where('studentId', isEqualTo: studentId)
+              .snapshots(),
+          builder: (context, evalSnapshot) {
+            if (evalSnapshot.hasError) {
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.redAccent.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.error_outline, color: Colors.redAccent, size: 20),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Error al cargar el progreso: ${evalSnapshot.error}',
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            if (!evalSnapshot.hasData) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.pinkAccent),
+                ),
+              );
+            }
+
+            // Copiar los docs a una lista mutable y ordenarla en memoria por createdAt descendente
+            final allEvaluations = List<DocumentSnapshot>.from(evalSnapshot.data!.docs);
+            allEvaluations.sort((a, b) {
+              final aTime = (a.data() as Map<String, dynamic>?)?['createdAt'] as Timestamp?;
+              final bTime = (b.data() as Map<String, dynamic>?)?['createdAt'] as Timestamp?;
+              if (aTime == null && bTime == null) return 0;
+              if (aTime == null) return 1;
+              if (bTime == null) return -1;
+              return bTime.compareTo(aTime);
+            });
+
+            final evaluations = allEvaluations.take(10).toList();

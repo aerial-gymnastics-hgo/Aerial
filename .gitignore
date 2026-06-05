@@ -1,0 +1,32 @@
+﻿# Flutter/Dart
+.dart_tool/
+.packages
+.pub/
+build/
+*.log
+*.lock
+
+# Node modules (no deberían estar aquí)
+**/node_modules/
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Otros proyectos que no sean este
+InmobiliariaHidalgo/
+aerial-gymnastics-app/
+elnith-v2/
+
+assets/images/gimnastas/
+
+*.py
+
+auth_service.txt
+
+main.txt

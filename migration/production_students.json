@@ -1,0 +1,1576 @@
+{
+  "users": {
+    "student_001": {
+      "name": "ADRIAN CERVANTEZ VERDE",
+      "email": "adrian.cervantez@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_002": {
+      "name": "ANTONELLA JIMENEZ MEJÍA",
+      "email": "antonella.jimenez@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_003": {
+      "name": "ELENA CABALLERO LOPEZ",
+      "email": "elena.caballero@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_004": {
+      "name": "JAMARI ALEXIA LOPEZ AVENDAÑO",
+      "email": "jamari.alexia@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_005": {
+      "name": "JULIETA GUERRA FREITEZ",
+      "email": "julieta.guerra@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_006": {
+      "name": "LUCIANA GRANDE BUSTAMANTE",
+      "email": "luciana.grande@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_007": {
+      "name": "REGINA FALCON ANTELES",
+      "email": "regina.falcon@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_008": {
+      "name": "REGINA GONZALEZ BUSTAMANTE",
+      "email": "regina.gonzalez@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_009": {
+      "name": "SOFIA ILIANES GARCIA MEDA",
+      "email": "sofia.ilianes@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_010": {
+      "name": "SOFÍA PAULINA ÑAÑEZ MEDINA",
+      "email": "sofia.paulina@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_011": {
+      "name": "VALENTINA LUCATERO BARRERA",
+      "email": "valentina.lucatero@aerial.temp",
+      "role": "student",
+      "group": "Oruguitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_012": {
+      "name": "ANA ELENA ZAMORA CUEVAS",
+      "email": "ana.elena@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_013": {
+      "name": "ANA PAULA ZAMORA",
+      "email": "ana.paula@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_014": {
+      "name": "ANA VICTORIA MOLINA SOSA",
+      "email": "ana.victoria@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_015": {
+      "name": "AZUL MELGAREJO GONZALEZ",
+      "email": "azul.melgarejo@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_016": {
+      "name": "CAMILA MANDUJANO GARCÍA",
+      "email": "camila.mandujano@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_017": {
+      "name": "CAROLINA ZAMORA OCHOA",
+      "email": "carolina.zamora@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_018": {
+      "name": "DIANA BETZABETH ORTIZ VILLALOBOS",
+      "email": "diana.betzabeth@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_019": {
+      "name": "ELENA BERGANZA GUZMAN",
+      "email": "elena.berganza@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_020": {
+      "name": "EMILIA CRUZ LOPEZ",
+      "email": "emilia.cruz@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_021": {
+      "name": "ISABELLA MUNGUIA REYES",
+      "email": "isabella.munguia@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_022": {
+      "name": "IVANNA MOLAR LÓPEZ",
+      "email": "ivanna.molar@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_023": {
+      "name": "LISSA PAULINA OLMEDO CHAVEZ",
+      "email": "lissa.paulina@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_024": {
+      "name": "LUANA GABRIELA LAZARO GUTIERREZ",
+      "email": "luana.gabriela@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_025": {
+      "name": "LUCIANA ISABELLA GODINEZ SANTILLAS",
+      "email": "luciana.isabella@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_026": {
+      "name": "MARIANA YARERLY VEGA FLORES",
+      "email": "mariana.yarerly@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_027": {
+      "name": "MARÍA JOSE CHAVEZ CALLEJAS",
+      "email": "maria.jose@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_028": {
+      "name": "MIA SOFIA ORDAZ LEON",
+      "email": "mia.sofia@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_029": {
+      "name": "MIRANDA OLGUIN SABANERO",
+      "email": "miranda.olguin@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_030": {
+      "name": "NATALIA RICO MENESES",
+      "email": "natalia.rico@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_031": {
+      "name": "REGINA GONZALEZ LAGUNA",
+      "email": "regina.gonzalez@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_032": {
+      "name": "ROMINA GUTIERREZ JUAREZ",
+      "email": "romina.gutierrez@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_033": {
+      "name": "SANTIAGO LOPEZ PORTILLO",
+      "email": "santiago.lopez@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_034": {
+      "name": "SOFIA MELGAREJO GONZALEZ",
+      "email": "sofia.melgarejo@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_035": {
+      "name": "VALENTINA DIAZ PEREZ",
+      "email": "valentina.diaz@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_036": {
+      "name": "VANESSA HERNANDEZ PARTIDO",
+      "email": "vanessa.hernandez@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_037": {
+      "name": "VANIA HERNANDEZ PARTIDO",
+      "email": "vania.hernandez@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_038": {
+      "name": "YENSY ANTONELLA VARGAS RANGEL",
+      "email": "yensy.antonella@aerial.temp",
+      "role": "student",
+      "group": "Abejitas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_039": {
+      "name": "ALANA VALENTINA GARCÍA MONSALVO",
+      "email": "alana.valentina@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_040": {
+      "name": "ALESSANDRA MORALES GALLARDO",
+      "email": "alessandra.morales@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_041": {
+      "name": "ALINA LARA MENDEZ",
+      "email": "alina.lara@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_042": {
+      "name": "ALONDRA LUNA ESPINOZA",
+      "email": "alondra.luna@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_043": {
+      "name": "ANDREA FUENTES ALVAREZ",
+      "email": "andrea.fuentes@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_044": {
+      "name": "ANNA LUCIA RAMIREZ HERNANDEZ",
+      "email": "anna.lucia@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_045": {
+      "name": "ANTONELLA VICHE MARQUEZ",
+      "email": "antonella.viche@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_046": {
+      "name": "ARIADNA FUENTES ALVAREZ",
+      "email": "ariadna.fuentes@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_047": {
+      "name": "AURI LUNA ESPINOZA",
+      "email": "auri.luna@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_048": {
+      "name": "CAROLINA LARA GARCÍA",
+      "email": "carolina.lara@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_049": {
+      "name": "CONSTANZA SOTO MARQUEZ",
+      "email": "constanza.soto@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_050": {
+      "name": "DANIELA ALEXANDRA REYES RODRIGUEZ",
+      "email": "daniela.alexandra@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_051": {
+      "name": "DASHA YEMAYA ROSAS FUENTES",
+      "email": "dasha.yemaya@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_052": {
+      "name": "DULCE VERONICA FLORES CHI",
+      "email": "dulce.veronica@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_053": {
+      "name": "ELIZABETH BROWN ROLDAN",
+      "email": "elizabeth.brown@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_054": {
+      "name": "EMMA RAMIREZ HERNANDEZ",
+      "email": "emma.ramirez@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_055": {
+      "name": "HELENA ROMO CUERVO",
+      "email": "helena.romo@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_056": {
+      "name": "IRLANDA CRUZ GIL",
+      "email": "irlanda.cruz@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_057": {
+      "name": "JULIETA ALONDRA ORTEGA VILLALOBOS",
+      "email": "julieta.alondra@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_058": {
+      "name": "LIZBETH FERNANDA ALDANA CRUZ",
+      "email": "lizbeth.fernanda@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_059": {
+      "name": "LUISIANA CERON FLOREZ",
+      "email": "luisiana.ceron@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_060": {
+      "name": "MARIA FERNANDA ROJO GONZALEZ",
+      "email": "maria.fernanda@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_061": {
+      "name": "MARÍA ISABEL GUERRA FREITEZ",
+      "email": "maria.isabel@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_062": {
+      "name": "MARÍA JOSÉ LARA GARCÍA",
+      "email": "maria.jose@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_063": {
+      "name": "MARÍA VALERY MATA LEIBA",
+      "email": "maria.valery@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_064": {
+      "name": "MILA HERNANDEZ GUTIERREZ",
+      "email": "mila.hernandez@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_065": {
+      "name": "MILA TOVAR RAMIREZ",
+      "email": "mila.tovar@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_066": {
+      "name": "MONICK MICHELLE GAXIOLA CASTRO",
+      "email": "monick.michelle@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_067": {
+      "name": "MONSERRAT GUADALUPE GAXIOLA CASTRO",
+      "email": "monserrat.guadalupe@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_068": {
+      "name": "PERLA NICOLE CALLEJAS CHEW",
+      "email": "perla.nicole@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_069": {
+      "name": "REGINA BADIILLO BALDERRAMA",
+      "email": "regina.badiillo@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_070": {
+      "name": "RENATA IBARRA URIBE",
+      "email": "renata.ibarra@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_071": {
+      "name": "RENATA ZAMORANO HERNANDEZ",
+      "email": "renata.zamorano@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_072": {
+      "name": "ROBERTA GABRIELA PATRICIO CORDERO",
+      "email": "roberta.gabriela@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_073": {
+      "name": "ROMINA REYES RODRIGUEZ",
+      "email": "romina.reyes@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_074": {
+      "name": "SARA ANGELES PEREZ",
+      "email": "sara.angeles@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_075": {
+      "name": "SOFIA ALVARADO RODRIGUEZ",
+      "email": "sofia.alvarado@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_076": {
+      "name": "SOFIA ESCUDERO SÁNCHEZ",
+      "email": "sofia.escudero@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_077": {
+      "name": "SOFIA SOTO RIVERA",
+      "email": "sofia.soto@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_078": {
+      "name": "URSULA JIMENA FLORES CASIO",
+      "email": "ursula.jimena@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_079": {
+      "name": "VALENTINA PALOMARES HERRERA",
+      "email": "valentina.palomares@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_080": {
+      "name": "VICTORIA FUENTES GONZALEZ",
+      "email": "victoria.fuentes@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_081": {
+      "name": "XIMENA GRANDE BUSTAMANTE",
+      "email": "ximena.grande@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_082": {
+      "name": "ZAMA HERNANDEZ CASAÑAZ",
+      "email": "zama.hernandez@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_083": {
+      "name": "ZENDAYA ALADRO FUENTES",
+      "email": "zendaya.aladro@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_084": {
+      "name": "ZOE MARTINEZ CAZAREZ",
+      "email": "zoe.martinez@aerial.temp",
+      "role": "student",
+      "group": "Mariposas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_085": {
+      "name": "AILEEN KISMET MEDINA ZAMUDIO",
+      "email": "aileen.kismet@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_086": {
+      "name": "ALESSANDRA ISELA JUAREZ DIAZ",
+      "email": "alessandra.isela@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_087": {
+      "name": "ALEXA RENDON PIÑA",
+      "email": "alexa.rendon@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_088": {
+      "name": "ARANZA ALMEIDA GUTIERREZ",
+      "email": "aranza.almeida@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_089": {
+      "name": "CLARA SARAI DE LA O LOZANO",
+      "email": "clara.sarai@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_090": {
+      "name": "DAIANE NAIROBI TOVAR DE AQUINO",
+      "email": "daiane.nairobi@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_091": {
+      "name": "ILSE ENRIQUEZ ARCE",
+      "email": "ilse.enriquez@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_092": {
+      "name": "JESSICA VALDEZ STRAFFON",
+      "email": "jessica.valdez@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_093": {
+      "name": "JULIETA ALEXANDRA REVILLA MACEDO",
+      "email": "julieta.alexandra@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_094": {
+      "name": "LEAH STEFANY RODRIGUEZ NAVIA",
+      "email": "leah.stefany@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_095": {
+      "name": "LYA SOFÍA BAUTISTA VITAL",
+      "email": "lya.sofia@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_096": {
+      "name": "MARIA FERNANDA LOPEZ PORTILLO",
+      "email": "maria.fernanda@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_097": {
+      "name": "MARIANA CRISTEL CERECEDO ARRIAGA",
+      "email": "mariana.cristel@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_098": {
+      "name": "NATALIA RODRIGUEZ MARTÍNEZ",
+      "email": "natalia.rodriguez@aerial.temp",
+      "role": "student",
+      "group": "Dragonas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_099": {
+      "name": "ALEXA MONSALVO JARAMILLO",
+      "email": "alexa.monsalvo@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_100": {
+      "name": "ALLISON PAOLA JOSHEPH ISLAS LEAL",
+      "email": "allison.paola@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_101": {
+      "name": "ANA LAURA BAUTISTA CHAVEZ",
+      "email": "ana.laura@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_102": {
+      "name": "ANTONELLA LOPEZ TELLO",
+      "email": "antonella.lopez@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_103": {
+      "name": "ARANZA SOTO HINOJOSA",
+      "email": "aranza.soto@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_104": {
+      "name": "CARLA VALENTINA PIÑA PEREZ",
+      "email": "carla.valentina@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_105": {
+      "name": "JIMENA SOPHIA RAMIREZ CRUZ",
+      "email": "jimena.sophia@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_106": {
+      "name": "LARYSA LAGARDE BARCENA",
+      "email": "larysa.lagarde@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_107": {
+      "name": "LUISA SOFÍA ROSIQUE ULLOA",
+      "email": "luisa.sofia@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_108": {
+      "name": "MARIA JOSÉ CERECEDO ARRIAGA",
+      "email": "maria.jose@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_109": {
+      "name": "MAYA DE ANDA DOMINGUEZ",
+      "email": "maya.de@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_110": {
+      "name": "REGINA MICHELLE ORTIZ PRADO",
+      "email": "regina.michelle@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_111": {
+      "name": "ROMINA MARIANA ORTIZ PRADO",
+      "email": "romina.mariana@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_112": {
+      "name": "SOFIA HERNANDEZ CAMARILLO",
+      "email": "sofia.hernandez@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_113": {
+      "name": "SOFIA URBAN VARGAS",
+      "email": "sofia.urban@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_114": {
+      "name": "VICTORIA ROMERO ACOSTA",
+      "email": "victoria.romero@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_115": {
+      "name": "ZAHIRA NIRALY SANTIAGO HERNÁNDEZ",
+      "email": "zahira.niraly@aerial.temp",
+      "role": "student",
+      "group": "Panteras",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_116": {
+      "name": "DANIELA MARTINEZ ENRIQUEZ",
+      "email": "daniela.martinez@aerial.temp",
+      "role": "student",
+      "group": "Tigresas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_117": {
+      "name": "DIANA SÁNCHEZ MARTINEZ",
+      "email": "diana.sanchez@aerial.temp",
+      "role": "student",
+      "group": "Tigresas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_118": {
+      "name": "GENESIS YAMILET CASTILLO ÁVILA",
+      "email": "genesis.yamilet@aerial.temp",
+      "role": "student",
+      "group": "Tigresas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_119": {
+      "name": "HEYDEN DANIEL GRANILLO GUTIERREZ",
+      "email": "heyden.daniel@aerial.temp",
+      "role": "student",
+      "group": "Tigresas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_120": {
+      "name": "JOANA PAOLA CHACON DE LA PEÑA",
+      "email": "joana.paola@aerial.temp",
+      "role": "student",
+      "group": "Tigresas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_121": {
+      "name": "PAULA BARRIOS PATIÑO",
+      "email": "paula.barrios@aerial.temp",
+      "role": "student",
+      "group": "Tigresas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_122": {
+      "name": "REGINA UNZUETA PEREZ",
+      "email": "regina.unzueta@aerial.temp",
+      "role": "student",
+      "group": "Tigresas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_123": {
+      "name": "VALERIA JIMENEZ CEDILLO",
+      "email": "valeria.jimenez@aerial.temp",
+      "role": "student",
+      "group": "Tigresas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_124": {
+      "name": "YARIS MARTÍNEZ CAMPOS",
+      "email": "yaris.martinez@aerial.temp",
+      "role": "student",
+      "group": "Tigresas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_125": {
+      "name": "ALEXANDRA MOLANO MONRROY",
+      "email": "alexandra.molano@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_126": {
+      "name": "ALEXIA BRAVO ACEVEDO",
+      "email": "alexia.bravo@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_127": {
+      "name": "ALONDRA FERNANDA ESPINOZA GONZALEZ",
+      "email": "alondra.fernanda@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_128": {
+      "name": "CONSTANZA CASTRO OSORIO",
+      "email": "constanza.castro@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_129": {
+      "name": "ELVIA MARGARITA ALVAREZ NORIEGA",
+      "email": "elvia.margarita@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_130": {
+      "name": "GABRIELA HERNANDEZ CAPETILLO",
+      "email": "gabriela.hernandez@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_131": {
+      "name": "MARIA FERNANDA MARTINEZ RODRIGUEZ",
+      "email": "maria.fernanda@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_132": {
+      "name": "MARISSA MARTIN CALDERON",
+      "email": "marissa.martin@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_133": {
+      "name": "NATALIA OSORNO ORTIZ",
+      "email": "natalia.osorno@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_134": {
+      "name": "REGINA CASILLAS GARZA",
+      "email": "regina.casillas@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_135": {
+      "name": "SIENNA ORTEGA SAENZ",
+      "email": "sienna.ortega@aerial.temp",
+      "role": "student",
+      "group": "Panditas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_136": {
+      "name": "ALLISON MARTINEZ ENRIQUEZ",
+      "email": "allison.martinez@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_137": {
+      "name": "ANA PAULA NORIEGA ZACARÍAS",
+      "email": "ana.paula@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_138": {
+      "name": "CARLOTA CABRERA CABAÑAS",
+      "email": "carlota.cabrera@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_139": {
+      "name": "EMMA REGINA RODRIGUEZ VALDEZ",
+      "email": "emma.regina@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_140": {
+      "name": "LARA ESTHER HERNANDEZ CANO",
+      "email": "lara.esther@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_141": {
+      "name": "MADAI GARCIA OCTAVIO",
+      "email": "madai.garcia@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_142": {
+      "name": "MIA SUSEJ JUAREZ HERNANDEZ",
+      "email": "mia.susej@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_143": {
+      "name": "REBECA UNZUETA PEREZ",
+      "email": "rebeca.unzueta@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_144": {
+      "name": "SOFIA MARTINEZ LEON",
+      "email": "sofia.martinez@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_145": {
+      "name": "VALERIA VAZQUEZ HENKEL",
+      "email": "valeria.vazquez@aerial.temp",
+      "role": "student",
+      "group": "Conejas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_146": {
+      "name": "ANA SOFIA MONTAÑO VIDAL",
+      "email": "ana.sofia@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_147": {
+      "name": "ANDREA GARCIA VELAZQUEZ",
+      "email": "andrea.garcia@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_148": {
+      "name": "DANIELA MONTOYA GRANADOS",
+      "email": "daniela.montoya@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_149": {
+      "name": "DANIELA MOSSO GONZALEZ",
+      "email": "daniela.mosso@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_150": {
+      "name": "EMMA PERALEZ CASTAÑEDA",
+      "email": "emma.peralez@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_151": {
+      "name": "IVANNA MONTOYA GRANADOS",
+      "email": "ivanna.montoya@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_152": {
+      "name": "LORENA AGUILAR CARRASCO",
+      "email": "lorena.aguilar@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_153": {
+      "name": "MARIA JOSE GRANILLO BAÑOS",
+      "email": "maria.jose@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_154": {
+      "name": "MARIA JOSE MONROY SIERRA",
+      "email": "maria.jose@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_155": {
+      "name": "REGINA PERABELES TRABULSE",
+      "email": "regina.perabeles@aerial.temp",
+      "role": "student",
+      "group": "Halconas",
+      "monthlyObjective": null,
+      "photoUrl": null
+    },
+    "student_156": {
+      "name": "EMILY TANITH OLVERA AYALA",
+      "email": "emily.tanith@aerial.temp",
+      "role": "student",
+      "group": "Linces",
+      "monthlyObjective": null,
+      "photoUrl": null
+    }
+  },
+  "groups_catalog": [
+    {
+      "id": "ORU",
+      "name": "Oruguitas",
+      "type": "Formativo",
+      "fee": 1000,
+      "days": "M,J",
+      "schedule": "17:30-18:15"
+    },
+    {
+      "id": "ABE",
+      "name": "Abejitas",
+      "type": "Formativo",
+      "fee": 950,
+      "days": "M,J",
+      "schedule": "16:00-17:30"
+    },
+    {
+      "id": "MAR",
+      "name": "Mariposas",
+      "type": "Formativo",
+      "fee": 950,
+      "days": "M,J",
+      "schedule": "17:30-19:00"
+    },
+    {
+      "id": "DRA",
+      "name": "Dragonas",
+      "type": "Formativo",
+      "fee": 1150,
+      "days": "L,M,V",
+      "schedule": "16:30-18:00"
+    },
+    {
+      "id": "PAN",
+      "name": "Panteras",
+      "type": "Formativo",
+      "fee": 1150,
+      "days": "L,M,V",
+      "schedule": "16:30-18:00"
+    },
+    {
+      "id": "TIG",
+      "name": "Tigresas",
+      "type": "Competitivo",
+      "fee": 1250,
+      "days": "L,M,V",
+      "schedule": "17:30-19:30"
+    },
+    {
+      "id": "PND",
+      "name": "Panditas",
+      "type": "Competitivo",
+      "fee": 1250,
+      "days": "L,M,V",
+      "schedule": "17:30-19:30"
+    },
+    {
+      "id": "CON",
+      "name": "Conejas",
+      "type": "Competitivo",
+      "fee": 1350,
+      "days": "L-V",
+      "schedule": "16:30-18:30"
+    },
+    {
+      "id": "HAL",
+      "name": "Halconas",
+      "type": "Competitivo",
+      "fee": 1450,
+      "days": "L-V",
+      "schedule": "16:30-19:30"
+    },
+    {
+      "id": "LIN",
+      "name": "Linces",
+      "type": "Formativo",
+      "fee": 800,
+      "days": "M,J",
+      "schedule": "19:00-20:00"
+    }
+  ],
+  "assignments": [
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "17:30",
+      "endTime": "18:15",
+      "groupId": "Oruguitas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Jueves",
+      "startTime": "17:30",
+      "endTime": "18:15",
+      "groupId": "Oruguitas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "16:00",
+      "endTime": "17:30",
+      "groupId": "Abejitas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Jueves",
+      "startTime": "16:00",
+      "endTime": "17:30",
+      "groupId": "Abejitas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "17:30",
+      "endTime": "19:00",
+      "groupId": "Mariposas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Jueves",
+      "startTime": "17:30",
+      "endTime": "19:00",
+      "groupId": "Mariposas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "16:30",
+      "endTime": "18:00",
+      "groupId": "Dragonas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Miércoles",
+      "startTime": "16:30",
+      "endTime": "18:00",
+      "groupId": "Dragonas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Viernes",
+      "startTime": "16:30",
+      "endTime": "18:00",
+      "groupId": "Dragonas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "16:30",
+      "endTime": "18:00",
+      "groupId": "Panteras",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Miércoles",
+      "startTime": "16:30",
+      "endTime": "18:00",
+      "groupId": "Panteras",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Viernes",
+      "startTime": "16:30",
+      "endTime": "18:00",
+      "groupId": "Panteras",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "17:30",
+      "endTime": "19:30",
+      "groupId": "Tigresas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Miércoles",
+      "startTime": "17:30",
+      "endTime": "19:30",
+      "groupId": "Tigresas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Viernes",
+      "startTime": "17:30",
+      "endTime": "19:30",
+      "groupId": "Tigresas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "17:30",
+      "endTime": "19:30",
+      "groupId": "Panditas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Miércoles",
+      "startTime": "17:30",
+      "endTime": "19:30",
+      "groupId": "Panditas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Viernes",
+      "startTime": "17:30",
+      "endTime": "19:30",
+      "groupId": "Panditas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "16:30",
+      "endTime": "18:30",
+      "groupId": "Conejas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Martes",
+      "startTime": "16:30",
+      "endTime": "18:30",
+      "groupId": "Conejas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Miércoles",
+      "startTime": "16:30",
+      "endTime": "18:30",
+      "groupId": "Conejas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Jueves",
+      "startTime": "16:30",
+      "endTime": "18:30",
+      "groupId": "Conejas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Viernes",
+      "startTime": "16:30",
+      "endTime": "18:30",
+      "groupId": "Conejas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "16:30",
+      "endTime": "19:30",
+      "groupId": "Halconas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Martes",
+      "startTime": "16:30",
+      "endTime": "19:30",
+      "groupId": "Halconas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Miércoles",
+      "startTime": "16:30",
+      "endTime": "19:30",
+      "groupId": "Halconas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Jueves",
+      "startTime": "16:30",
+      "endTime": "19:30",
+      "groupId": "Halconas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Viernes",
+      "startTime": "16:30",
+      "endTime": "19:30",
+      "groupId": "Halconas",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Lunes",
+      "startTime": "19:00",
+      "endTime": "20:00",
+      "groupId": "Linces",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    },
+    {
+      "dayOfWeek": "Jueves",
+      "startTime": "19:00",
+      "endTime": "20:00",
+      "groupId": "Linces",
+      "apparatus": "General",
+      "coachId": "Ebh2SGyi36TdFqmaMb66owX9WDu2"
+    }
+  ]
+}

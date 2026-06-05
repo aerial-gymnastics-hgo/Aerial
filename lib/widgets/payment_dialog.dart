@@ -1,0 +1,517 @@
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:google_fonts/google_fonts.dart';
+import '../models/payment_model.dart';
+import '../services/payment_service.dart';
+import '../services/receipt_capture_service.dart';
+import '../widgets/payment_receipt.dart';
+
+/// Modal para registrar un pago y generar el recibo visual.
+class PaymentDialog extends StatefulWidget {
+  final String studentId;
+  final String studentName;
+  final String groupId;
+
+  const PaymentDialog({
+    super.key,
+    required this.studentId,
+    required this.studentName,
+    required this.groupId,
+  });
+
+  @override
+  State<PaymentDialog> createState() => _PaymentDialogState();
+}
+
+class _PaymentDialogState extends State<PaymentDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _amountController = TextEditingController(text: '1200');
+  final _conceptController =
+      TextEditingController(text: 'Mensualidad');
+  final _notesController = TextEditingController();
+
+  String _paymentMethod = 'Efectivo';
+  bool _processing = false;
+
+  // Estado post-pago: muestra preview del recibo
+  Payment? _completedPayment;
+  Uint8List? _receiptPreview;
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _conceptController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding:
+          const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      child: _completedPayment != null
+          ? _buildReceiptView()
+          : _buildFormView(),
+    );
+  }
+
+  // ── Vista del formulario ──────────────────────────────────────────
+
+  Widget _buildFormView() {
+    return Container(
+      width: 500,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E2E),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: const Color(0xFF3949AB).withValues(alpha: 0.5)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1A237E), Color(0xFF3949AB)],
+              ),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.receipt_long,
+                    color: Colors.white, size: 22),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Registrar Pago',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${widget.studentName} · ${widget.groupId.toUpperCase()}',
+                        style: GoogleFonts.inter(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close,
+                      color: Colors.white70, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+
+          // Form body
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildField(
+                      controller: _amountController,
+                      label: 'Monto (MXN)',
+                      prefixText: '\$ ',
+                      keyboardType: TextInputType.number,
+                      icon: Icons.attach_money,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return 'Requerido';
+                        if (double.tryParse(v) == null) {
+                          return 'Monto inválido';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 14),
+                    _buildField(
+                      controller: _conceptController,
+                      label: 'Concepto',
+                      icon: Icons.description_outlined,
+                      validator: (v) =>
+                          v?.isEmpty ?? true ? 'Requerido' : null,
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Método de pago
+                    Text(
+                      'Método de Pago',
+                      style: GoogleFonts.inter(
+                          color: Colors.white70, fontSize: 12),
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        'Efectivo',
+                        'Transferencia',
+                        'Tarjeta',
+                      ].map((method) {
+                        final selected = _paymentMethod == method;
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () =>
+                                setState(() => _paymentMethod = method),
+                            child: Container(
+                              margin:
+                                  const EdgeInsets.only(right: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10),
+                              decoration: BoxDecoration(
+                                color: selected
+                                    ? const Color(0xFF3949AB)
+                                    : const Color(0xFF2A2A3E),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: selected
+                                      ? const Color(0xFF3949AB)
+                                      : const Color(0xFF3A3A4E),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    _methodIcon(method),
+                                    color: selected
+                                        ? Colors.white
+                                        : Colors.grey,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    method,
+                                    style: GoogleFonts.inter(
+                                      color: selected
+                                          ? Colors.white
+                                          : Colors.grey,
+                                      fontSize: 11,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 14),
+                    _buildField(
+                      controller: _notesController,
+                      label: 'Notas (opcional)',
+                      icon: Icons.notes,
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Botón de registro
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _processing ? null : _registerPayment,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3949AB),
+                          disabledBackgroundColor:
+                              const Color(0xFF3949AB).withValues(alpha: 0.4),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        icon: _processing
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Icon(Icons.receipt,
+                                color: Colors.white),
+                        label: Text(
+                          _processing
+                              ? 'Procesando...'
+                              : 'Registrar y Generar Recibo',
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Vista del recibo generado ─────────────────────────────────────
+
+  Widget _buildReceiptView() {
+    final payment = _completedPayment!;
+    return Container(
+      width: 480,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E2E),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Header
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
+              color: Color(0xFF43A047),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.check_circle,
+                    color: Colors.white, size: 22),
+                const SizedBox(width: 10),
+                Text(
+                  '¡Pago registrado exitosamente!',
+                  style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+
+          // Preview del recibo (si se generó la imagen)
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  if (_receiptPreview != null)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.memory(_receiptPreview!),
+                    )
+                  else
+                    PaymentReceipt(payment: payment),
+
+                  const SizedBox(height: 20),
+
+                  // Acciones
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _actionButton(
+                          icon: Icons.share,
+                          label: 'Compartir',
+                          color: const Color(0xFF3949AB),
+                          onTap: () => ReceiptCaptureService.shareReceipt(
+                              payment,
+                              context: context),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _actionButton(
+                          icon: Icons.save_alt,
+                          label: 'Guardar',
+                          color: const Color(0xFF00897B),
+                          onTap: () async {
+                            final path = await ReceiptCaptureService
+                                .saveReceipt(payment);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(path != null
+                                      ? '✅ Guardado en Documentos'
+                                      : '❌ Error al guardar'),
+                                  backgroundColor: path != null
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _actionButton(
+                          icon: Icons.close,
+                          label: 'Cerrar',
+                          color: const Color(0xFF616161),
+                          onTap: () => Navigator.pop(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return ElevatedButton.icon(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      icon: Icon(icon, color: Colors.white, size: 16),
+      label: Text(label,
+          style: GoogleFonts.inter(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w600)),
+    );
+  }
+
+  Widget _buildField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    String? prefixText,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style:
+                GoogleFonts.inter(color: Colors.white70, fontSize: 12)),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+          validator: validator,
+          decoration: InputDecoration(
+            prefixText: prefixText,
+            prefixStyle:
+                GoogleFonts.inter(color: Colors.white70, fontSize: 14),
+            prefixIcon:
+                Icon(icon, color: Colors.white38, size: 18),
+            filled: true,
+            fillColor: const Color(0xFF2A2A3E),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF3A3A4E)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF3A3A4E)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFF3949AB)),
+            ),
+            errorStyle:
+                GoogleFonts.inter(color: Colors.red.shade300, fontSize: 11),
+          ),
+        ),
+      ],
+    );
+  }
+
+  IconData _methodIcon(String method) {
+    switch (method) {
+      case 'Efectivo':
+        return Icons.payments_outlined;
+      case 'Transferencia':
+        return Icons.account_balance_outlined;
+      case 'Tarjeta':
+        return Icons.credit_card;
+      default:
+        return Icons.payment;
+    }
+  }
+
+  // ── Lógica de registro ────────────────────────────────────────────
+
+  Future<void> _registerPayment() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _processing = true);
+
+    try {
+      final currentUser = fb_auth.FirebaseAuth.instance.currentUser;
+
+      final payment = await PaymentService.registerPayment(
+        studentId: widget.studentId,
+        studentName: widget.studentName,
+        groupId: widget.groupId,
+        amount: double.parse(_amountController.text),
+        concept: _conceptController.text.trim(),
+        paymentMethod: _paymentMethod,
+        notes: _notesController.text.trim(),
+        registeredBy: currentUser?.email ?? 'caja',
+      );
+
+      // Generar preview de la imagen
+      final previewBytes =
+          await ReceiptCaptureService.getReceiptBytes(payment);
+
+      if (mounted) {
+        setState(() {
+          _completedPayment = payment;
+          _receiptPreview = previewBytes;
+          _processing = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _processing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('❌ Error al registrar pago: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+}

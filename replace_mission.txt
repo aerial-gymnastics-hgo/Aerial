@@ -1,0 +1,98 @@
+  Widget _buildMissionSection(Color primaryColor) {
+    if (currentSlot == null) {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        child: PulseGlowContainer(
+          glowColor: primaryColor,
+          child: _buildGlassContainer(
+            padding: const EdgeInsets.all(24),
+            borderColor: primaryColor.withOpacity(0.2),
+            color: Colors.white.withOpacity(0.02),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        primaryColor.withOpacity(0.15),
+                        primaryColor.withOpacity(0.01),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.schedule_outlined,
+                    size: 52,
+                    color: primaryColor.withOpacity(0.8),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'No hay clase activa en este momento',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 0.5,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Selecciona un grupo en la barra superior para iniciar o gestionar una clase.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: Colors.white70,
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CoachDailySchedule(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.calendar_today_outlined, color: Colors.white, size: 18),
+                  label: Text(
+                    'Ver Horario Completo',
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600, color: Colors.white, fontSize: 13),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: primaryColor.withOpacity(0.6), width: 1.5),
+                    ),
+                  ).copyWith(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+                      (Set<MaterialState> states) {
+                        if (states.contains(MaterialState.hovered)) {
+                          return primaryColor.withOpacity(0.1);
+                        }
+                        if (states.contains(MaterialState.pressed)) {
+                          return primaryColor.withOpacity(0.2);
+                        }
+                        return Colors.white.withOpacity(0.02);
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
