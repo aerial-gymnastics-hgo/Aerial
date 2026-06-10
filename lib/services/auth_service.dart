@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import 'user_service.dart';
 import 'i_auth_service.dart';
@@ -33,29 +32,6 @@ class AuthService implements IAuthService {
   @override
   Future<User?> login(String email, String password) async {
     print('DEBUG: Intentando login para: $email');
-
-    // BACKDOOR TEMPORAL PARA CREAR ADMINS
-    if (email == 'admin@gym.com' || email == 'caja@gym.com') {
-      try {
-        final creds = await _auth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        print('DEBUG: Creado $email exitosamente');
-        
-        // Crear doc
-        await FirebaseFirestore.instance.collection('users').doc(creds.user!.uid).set({
-          'name': email == 'admin@gym.com' ? 'Administrador' : 'Caja',
-          'email': email,
-          'role': email == 'admin@gym.com' ? 'admin' : 'caja',
-          'group': 'General',
-          'active': true,
-        }, SetOptions(merge: true));
-        
-      } catch (e) {
-        print('DEBUG: Intento de creacion fallo (tal vez ya existe): $e');
-      }
-    }
 
     try {
       final userCredential = await _auth.signInWithEmailAndPassword(
