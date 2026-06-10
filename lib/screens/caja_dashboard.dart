@@ -1,15 +1,11 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/firestore_service.dart';
 import '../services/analytics_service.dart';
 import '../services/excel_export_service.dart';
+import '../widgets/payment_dialog.dart';
 import 'landing_page.dart';
 import 'analytics_dashboard.dart';
 
@@ -353,68 +349,12 @@ class _CajaDashboardState extends State<CajaDashboard> {
   // --- DIALOGS ---
 
   void _showPaymentDialog(User student) {
-    final amountController = TextEditingController(text: student.monthlyFee?.toStringAsFixed(0) ?? '0');
-    String concept = 'Mensualidad ${DateFormat('MMMM yyyy', 'es').format(DateTime.now())}';
-    String method = 'efectivo';
-
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          backgroundColor: const Color(0xFF1E1E1E),
-          title: Text('Generar Cobro', style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.bold)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(student.name, style: GoogleFonts.poppins(color: Colors.white70)),
-              const SizedBox(height: 20),
-              TextField(
-                controller: amountController,
-                keyboardType: TextInputType.number,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(labelText: 'Monto', labelStyle: TextStyle(color: Colors.white54)),
-              ),
-              const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                value: method,
-                dropdownColor: const Color(0xFF2C2C2C),
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(labelText: 'Método de Pago', labelStyle: TextStyle(color: Colors.white54)),
-                items: const [
-                  DropdownMenuItem(value: 'efectivo', child: Text('Efectivo')),
-                  DropdownMenuItem(value: 'tarjeta', child: Text('Tarjeta')),
-                  DropdownMenuItem(value: 'transferencia', child: Text('Transferencia')),
-                ],
-                onChanged: (v) => setState(() => method = v!),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR')),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-              onPressed: () async {
-                final paymentData = {
-                  'studentId': student.id,
-                  'studentName': student.name,
-                  'groupId': student.group,
-                  'amount': double.parse(amountController.text),
-                  'concept': concept,
-                  'paymentMethod': method,
-                  'receivedBy': widget.currentUser.id,
-                  'receivedByName': widget.currentUser.name,
-                  'status': 'completed',
-                  'receiptNumber': 'REC-${DateTime.now().millisecondsSinceEpoch}',
-                };
-
-                await FirestoreService.instance.addPayment(paymentData);
-                Navigator.pop(context);
-                _showReceipt(paymentData);
-              },
-              child: const Text('CONFIRMAR PAGO'),
-            ),
-          ],
-        ),
+      builder: (_) => PaymentDialog(
+        studentId: student.id,
+        studentName: student.name,
+        groupId: student.group,
       ),
     );
   }
@@ -477,44 +417,5 @@ class _CajaDashboardState extends State<CajaDashboard> {
     );
   }
 
-  // --- RECEIPT GENERATION ---
-
-  Future<void> _showReceipt(Map<String, dynamic> data) async {
-    final pdf = pw.Document();
-    
-    pdf.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.roll80,
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Center(child: pw.Text('AERIAL GYMNASTICS', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 18))),
-              pw.Center(child: pw.Text('CASA PÄDI', style: pw.TextStyle(fontSize: 14))),
-              pw.SizedBox(height: 20),
-              pw.Text('RECIBO: ${data['receiptNumber']}'),
-              pw.Text('FECHA: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}'),
-              pw.SizedBox(height: 10),
-              pw.Divider(),
-              pw.Text('ALUMNA: ${data['studentName']}'),
-              pw.Text('GRUPO: ${data['groupId']}'),
-              pw.SizedBox(height: 10),
-              pw.Text('CONCEPTO: ${data['concept']}'),
-              pw.Text('MÉTODO: ${data['paymentMethod'].toString().toUpperCase()}'),
-              pw.SizedBox(height: 10),
-              pw.Text('TOTAL: \$${data['amount']}', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16)),
-              pw.Divider(),
-              pw.SizedBox(height: 10),
-              pw.Text('RECIBIDO POR: ${data['receivedByName']}'),
-              pw.SizedBox(height: 20),
-              pw.Center(child: pw.Text('¡GRACIAS POR SU PAGO!')),
-            ],
-          );
-        },
-      ),
-    );
-
-    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdf.save());
-  }
 }
 

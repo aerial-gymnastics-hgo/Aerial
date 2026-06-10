@@ -6,6 +6,7 @@ import 'dart:async';
 import '../services/firestore_service.dart';
 import '../models/user_model.dart';
 import '../utils/image_helper.dart';
+import '../widgets/payment_dialog.dart';
 
 class AdminPaymentEntryScreen extends StatefulWidget {
   const AdminPaymentEntryScreen({super.key});
@@ -198,20 +199,7 @@ class _AdminPaymentEntryScreenState extends State<AdminPaymentEntryScreen> {
   }
 
   Widget _buildStudentTile(User student) {
-    // Replicamos lógica del cascarón
-    final isDebt = student.id.toLowerCase().contains('a') ||
-        student.id.toLowerCase().contains('o');
-    final List<Map<String, dynamic>> finances = isDebt
-        ? [
-            {'concept': 'Mensualidad', 'amount': 1200.0, 'status': 'Vencido'}
-          ]
-        : [];
-
-    final pending = finances.where((f) => f['status'] != 'Pagado').toList();
-    final totalDebt =
-        pending.fold(0.0, (sum, f) => sum + (f['amount'] as num).toDouble());
-    final isPaidCurrentMonth = !isDebt;
-    final isClear = pending.isEmpty;
+    final isClear = student.paymentStatus == 'current';
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -255,7 +243,7 @@ class _AdminPaymentEntryScreenState extends State<AdminPaymentEntryScreen> {
                   Text(
                       isClear
                           ? 'Sin Adeudos'
-                          : 'Deuda: \$${totalDebt.toStringAsFixed(2)}',
+                          : 'Con Adeudos',
                       style: GoogleFonts.poppins(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -266,17 +254,14 @@ class _AdminPaymentEntryScreenState extends State<AdminPaymentEntryScreen> {
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (isPaidCurrentMonth)
+                  if (isClear)
                     const Icon(Icons.verified,
                         color: Colors.greenAccent, size: 20),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: pending.isEmpty
-                        ? null
-                        : () => _showPaymentDialog(student, pending),
+                    onPressed: () => _showPaymentDialog(student),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          pending.isEmpty ? Colors.grey : Colors.greenAccent,
+                      backgroundColor: Colors.greenAccent,
                       foregroundColor: Colors.black87,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
@@ -296,145 +281,13 @@ class _AdminPaymentEntryScreenState extends State<AdminPaymentEntryScreen> {
     );
   }
 
-  void _showPaymentDialog(
-      User student, List<Map<String, dynamic>> pendingItems) {
-    String selectedMethod = 'Efectivo';
-    final TextEditingController notesController = TextEditingController();
-    DateTime selectedDate = DateTime.now();
-
+  void _showPaymentDialog(User student) {
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          double totalSelected = pendingItems
-              .where((i) => i['selected'] == true)
-              .fold(0.0, (sum, i) => sum + (i['amount'] as num).toDouble());
-          return AlertDialog(
-            backgroundColor: Colors.grey[900],
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: Colors.white.withOpacity(0.1))),
-            title: Text('Cobrar a ${student.name.split(' ')[0]}',
-                style: GoogleFonts.montserrat(
-                    fontWeight: FontWeight.bold, color: Colors.white)),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Conceptos pendientes',
-                      style: GoogleFonts.poppins(color: Colors.white70)),
-                  const SizedBox(height: 8),
-                  ...pendingItems.map((item) {
-                    bool isSelected = item['selected'] ?? false;
-                    return Theme(
-                      data: Theme.of(context)
-                          .copyWith(unselectedWidgetColor: Colors.white54),
-                      child: CheckboxListTile(
-                        activeColor: Colors.greenAccent,
-                        checkColor: Colors.black,
-                        title: Text(item['concept'],
-                            style: GoogleFonts.poppins(color: Colors.white)),
-                        subtitle: Text('\$${item['amount']}',
-                            style: GoogleFonts.montserrat(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.redAccent)),
-                        value: isSelected,
-                        onChanged: (val) {
-                          setState(() {
-                            item['selected'] = val;
-                          });
-                        },
-                      ),
-                    );
-                  }).toList(),
-                  const Divider(color: Colors.white24),
-                  Text('Total a Pagar: \$${totalSelected.toStringAsFixed(2)}',
-                      style: GoogleFonts.montserrat(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.greenAccent,
-                          fontSize: 18)),
-                  const SizedBox(height: 16),
-                  DropdownButtonFormField<String>(
-                    initialValue: selectedMethod,
-                    dropdownColor: Colors.grey[850],
-                    style: GoogleFonts.poppins(color: Colors.white),
-                    decoration: InputDecoration(
-                      labelText: 'Método de Pago',
-                      labelStyle: const TextStyle(color: Colors.white54),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Colors.white.withOpacity(0.3))),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              const BorderSide(color: Colors.greenAccent)),
-                    ),
-                    items: const [
-                      DropdownMenuItem(
-                          value: 'Efectivo', child: Text('💵 Efectivo')),
-                      DropdownMenuItem(
-                          value: 'Transferencia',
-                          child: Text('🏦 Transferencia')),
-                      DropdownMenuItem(
-                          value: 'Tarjeta', child: Text('💳 Tarjeta')),
-                      DropdownMenuItem(
-                          value: 'Depósito', child: Text('🏧 Depósito')),
-                      DropdownMenuItem(
-                          value: 'Cheque', child: Text('📝 Cheque')),
-                    ],
-                    onChanged: (v) =>
-                        setState(() => selectedMethod = v ?? selectedMethod),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: notesController,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                      labelText: 'Notas (opcional)',
-                      labelStyle: TextStyle(color: Colors.white54),
-                      enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.white24)),
-                      focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.greenAccent)),
-                    ),
-                    maxLines: 2,
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar',
-                      style: TextStyle(color: Colors.white54))),
-              ElevatedButton(
-                onPressed: totalSelected == 0.0
-                    ? null
-                    : () {
-                        FirestoreService.instance.addTransaction({
-                          'studentId': student.id,
-                          'amount': totalSelected,
-                          'paymentMethod': selectedMethod,
-                        });
-                        Navigator.pop(context);
-                        _filterDebtStudents();
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                'Cobro Exitoso: \$${totalSelected.toStringAsFixed(2)}'),
-                            backgroundColor: Colors.greenAccent,
-                            behavior: SnackBarBehavior.floating));
-                      },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.greenAccent,
-                    foregroundColor: Colors.black87),
-                child: const Text('Confirmar',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ],
-          );
-        },
+      builder: (_) => PaymentDialog(
+        studentId: student.id,
+        studentName: student.name,
+        groupId: student.group,
       ),
     );
   }

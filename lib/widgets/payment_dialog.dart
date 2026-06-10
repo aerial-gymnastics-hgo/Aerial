@@ -491,9 +491,13 @@ class _PaymentDialogState extends State<PaymentDialog> {
         registeredBy: currentUser?.email ?? 'caja',
       );
 
-      // Generar preview de la imagen
-      final previewBytes =
-          await ReceiptCaptureService.getReceiptBytes(payment);
+      // Preview is optional — may be unavailable on web (dart:io).
+      Uint8List? previewBytes;
+      try {
+        previewBytes = await ReceiptCaptureService.getReceiptBytes(payment);
+      } catch (_) {
+        // Falls back to the PaymentReceipt Flutter widget shown below.
+      }
 
       if (mounted) {
         setState(() {
