@@ -35,31 +35,8 @@ class _ScheduleGridViewState extends State<ScheduleGridView> {
   final ScrollController _verticalController = ScrollController();
   final ScrollController _headerHorizontalController = ScrollController();
 
-  // Time blocks (16:30, 16:45, etc.)
-  // (Matching Reference Image)
-  final List<String> _timeLabels = [
-    '16:30',
-    '16:45',
-    '16:50',
-    '17:00',
-    '17:15',
-    '17:20',
-    '17:30',
-    '17:35',
-    '17:45',
-    '17:55',
-    '18:00',
-    '18:15',
-    '18:25',
-    '18:50',
-    '19:10',
-    '19:30'
-  ];
-
   List<String> get _groups {
-    final groups = FirestoreService.availableGroups;
-    print('📋 DEBUG UI: Grupos disponibles en interfaz: $groups');
-    return groups;
+    return FirestoreService.availableGroups;
   }
   List<User> _coaches = [];
   List<RotationSlot> _allRotations = [];
@@ -84,14 +61,6 @@ class _ScheduleGridViewState extends State<ScheduleGridView> {
 
     _rotSub = FirestoreService.instance.getAllRotations().listen(
       (data) {
-        print(
-            '🔍 DEBUG ScheduleGridView: Rotations recibidas del stream: ${data?.length ?? 0}');
-        if (data != null) {
-          for (var r in data.take(3)) {
-            print(
-                '  - ${r.day} ${r.startTime}-${r.endTime} ${r.groupId} ${r.apparatus}');
-          }
-        }
         if (mounted) {
           setState(() {
             _allRotations = data ?? [];
@@ -99,7 +68,6 @@ class _ScheduleGridViewState extends State<ScheduleGridView> {
         }
       },
       onError: (error) {
-        print('❌ ERROR en stream getAllRotations: $error');
         if (mounted) {
           setState(() {
             _allRotations = [];
@@ -110,19 +78,14 @@ class _ScheduleGridViewState extends State<ScheduleGridView> {
 
     _coachSub = FirestoreService.instance.getCoaches().listen(
       (data) {
-        print('🔍 DEBUG ScheduleGridView: Coaches recibidos: ${data?.length ?? 0}');
         if (mounted) {
           setState(() {
             _coaches = data ?? [];
           });
         }
       },
-      onError: (error) {
-        print('❌ ERROR en stream getCoaches: $error');
-      },
+      onError: (error) {},
     );
-    print('⏰ DEBUG UI: Horarios definidos: $_timeLabels');
-    print('⏰ DEBUG UI: Total slots de tiempo: ${_timeLabels.length}');
   }
 
   String _getCurrentDay() {
@@ -143,30 +106,10 @@ class _ScheduleGridViewState extends State<ScheduleGridView> {
 
   User _getCoach(String coachId) {
     final coach = _coaches.firstWhere(
-      (c) => c.id == coachId, 
-      orElse: () {
-        print('⚠️ WARNING: Coach no encontrado: $coachId');
-        return User(id: 'dummy', name: '?', email: '', role: UserRole.coach);
-      }
+      (c) => c.id == coachId,
+      orElse: () => User(id: 'dummy', name: '?', email: '', role: UserRole.coach)
     );
     return coach;
-  }
-
-  // === HELPER PARA DEBUGGING ===
-  void _debugCellMatch(String uiGroup, String uiTime, List<RotationSlot> allRotations) {
-    final matches = allRotations.where((r) => 
-      r.groupId == uiGroup && r.startTime == uiTime
-    ).toList();
-    
-    if (matches.isEmpty) {
-      // Buscar coincidencias parciales para diagnosticar
-      final groupMatches = allRotations.where((r) => r.groupId == uiGroup).length;
-      final timeMatches = allRotations.where((r) => r.startTime == uiTime).length;
-      
-      print('❌ MATCH: grupo:"$uiGroup" hora:"$uiTime" - 0 matches (${groupMatches} con grupo, ${timeMatches} con hora)');
-    } else {
-      print('✅ MATCH: grupo:"$uiGroup" hora:"$uiTime" - ${matches.length} rotation(s) encontrada(s)');
-    }
   }
 
   Color _textColorFor(Color bg) {
@@ -181,60 +124,15 @@ class _ScheduleGridViewState extends State<ScheduleGridView> {
         .where((r) => r.day == _selectedDay)
         .toList();
 
-    // === DEBUGGING EXHAUSTIVO ===
-    print('\n═══════════════════════════════════════');
-    print('🔍 DEBUG: Rotations de $_selectedDay: ${allRotations.length}');
-
-    if (allRotations.isNotEmpty) {
-      // Grupos en Firestore
-      final firestoreGroups = allRotations.map((r) => r.groupId).toSet().toList()..sort();
-      print('📊 DEBUG DATA: Grupos únicos en Firestore: $firestoreGroups');
-      
-      // Grupos en UI
-      print('📋 DEBUG UI: Grupos disponibles: $_groups');
-      
-      // Comparación directa
-      print('\n🔄 COMPARACIÓN DE GRUPOS:');
-      for (var uiGroup in _groups) {
-        final matchInFirestore = firestoreGroups.any((fg) => fg == uiGroup);
-        print('  UI: "$uiGroup" -> ${matchInFirestore ? "✅ EXISTE" : "❌ NO EXISTE"} en Firestore');
-      }
-      
-      // Horarios en Firestore
-      final firestoreTimes = allRotations.map((r) => r.startTime).toSet().toList()..sort();
-      print('\n⏰ DEBUG DATA: Horarios únicos en Firestore (primeros 10): ${firestoreTimes.take(10).toList()}');
-      print('⏰ DEBUG UI: Horarios definidos: $_timeLabels');
-      
-      // Muestra detallada de primeras 3 rotations
-      print('\n📝 MUESTRA DE ROTATIONS:');
-      for (var i = 0; i < 3 && i < allRotations.length; i++) {
-        final r = allRotations[i];
-        print('  ${i+1}. grupo:"${r.groupId}" | hora:"${r.startTime}" | aparato:${r.apparatus}');
-      }
-    }
-    print('═══════════════════════════════════════\n');
-    // === FIN DEBUG ===
-
-    // ============================================================
-    // GRUPOS Y HORARIOS DINÁMICOS (extraídos de rotations reales)
-    // ============================================================
-
     List<String> groups = [];
     List<String> timeLabels = [];
 
     if (allRotations.isNotEmpty) {
-      // Extraer grupos únicos de las rotations
       final groupSet = allRotations.map((r) => r.groupId).toSet();
       groups = groupSet.toList()..sort();
-      
-      // Extraer horarios únicos de las rotations
+
       final timeSet = allRotations.map((r) => r.startTime).toSet();
       timeLabels = timeSet.toList()..sort();
-      
-      print('✅ DYNAMIC: Grupos calculados: $groups');
-      print('✅ DYNAMIC: Horarios calculados: $timeLabels');
-    } else {
-      print('⚠️ DYNAMIC: No hay rotations, usando listas vacías');
     }
 
     // ============================================================
@@ -501,7 +399,6 @@ class _ScheduleGridViewState extends State<ScheduleGridView> {
                 child: Row(
                   children: List.generate(groups.length, (colIndex) {
                     final group = groups[colIndex];
-                    _debugCellMatch(group, timeLabel, rotations);
                     final entry = rotations.firstWhere(
                       (e) => e.startTime == timeLabel && e.groupId == group,
                       orElse: () => RotationSlot(

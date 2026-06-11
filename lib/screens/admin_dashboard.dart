@@ -48,26 +48,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   void initState() {
     super.initState();
-    _debugDirectQuery();
     _initStreams();
-  }
-
-  void _debugDirectQuery() async {
-    debugPrint('DEBUG: [AdminDashboard] Iniciando Query Directa de Prueba...');
-    try {
-      final snap = await FirebaseFirestore.instance
-          .collection('users')
-          .where('role', isEqualTo: 'student')
-          .limit(5)
-          .get();
-      
-      debugPrint('DEBUG: [AdminDashboard] Query Directa - Documentos encontrados: ${snap.docs.length}');
-      for (var doc in snap.docs) {
-        debugPrint('DEBUG: [AdminDashboard] Query Directa - Doc ID: ${doc.id}, Data: ${doc.data()}');
-      }
-    } catch (e) {
-      debugPrint('DEBUG: [AdminDashboard] Query Directa - ERROR: $e');
-    }
   }
 
   void _initStreams() {
