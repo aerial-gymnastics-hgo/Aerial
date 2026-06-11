@@ -542,9 +542,10 @@ void _openExcelTableView() {
               },
             ),
           ),
+            ],
+          ),
         ],
       ),
-      // Botón de arreglo de colores (temporal)
        floatingActionButton: FloatingActionButton.extended(
          onPressed: _openExcelTableView,
          icon: const Icon(Icons.table_chart),

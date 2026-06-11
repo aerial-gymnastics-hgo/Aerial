@@ -94,7 +94,7 @@ class _AnalyticsDashboardState extends State<AnalyticsDashboard>
     }
     setState(() => _exporting = true);
     try {
-      await ExcelExportService.exportAndShare(_payments);
+      await ExcelExportService.downloadReport(_payments);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('✅ Reporte Excel generado'), backgroundColor: Colors.green),

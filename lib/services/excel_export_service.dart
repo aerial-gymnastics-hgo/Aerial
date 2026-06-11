@@ -1,40 +1,34 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:excel/excel.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import '../models/payment_model.dart';
+import '../utils/web_download.dart';
 
 class ExcelExportService {
-  static final _currencyFmt =
-      NumberFormat.currency(locale: 'es_MX', symbol: '\$');
   static final _dateFmt = DateFormat('dd/MM/yyyy');
   static final _timeFmt = DateFormat('HH:mm');
   static final _stampFmt = DateFormat('yyyyMMdd_HHmmss');
 
-  /// Genera el reporte Excel y retorna el [File] creado.
-  static Future<File> generateReport(
+  static const _mimeXlsx =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+  // ── Construcción del Excel ─────────────────────────────────────────────────
+
+  /// Construye el workbook y devuelve los bytes codificados.
+  static Uint8List generateBytes(
     List<Payment> payments, {
     String sheetName = 'Reporte de Pagos',
-  }) async {
+  }) {
     final excel = Excel.createExcel();
-    // Eliminar la hoja por defecto de la librería
     excel.delete('Sheet1');
 
     final Sheet sheet = excel[sheetName];
 
-    // ── Encabezados ─────────────────────────────────────────────────────────
     final headers = [
-      'Folio',
-      'Fecha',
-      'Hora',
-      'Alumna',
-      'Grupo',
-      'Concepto',
-      'Método de Pago',
-      'Monto (MXN)',
-      'Registrado Por',
-      'Estado',
+      'Folio', 'Fecha', 'Hora', 'Alumna', 'Grupo',
+      'Concepto', 'Método de Pago', 'Monto (MXN)', 'Registrado Por', 'Estado',
     ];
 
     final headerStyle = CellStyle(
@@ -45,14 +39,12 @@ class ExcelExportService {
     );
 
     sheet.appendRow(headers.map((h) => TextCellValue(h)).toList());
-
     for (int col = 0; col < headers.length; col++) {
       sheet
           .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: 0))
           .cellStyle = headerStyle;
     }
 
-    // ── Filas de datos ───────────────────────────────────────────────────────
     final evenRowStyle = CellStyle(
       backgroundColorHex: ExcelColor.fromHexString('#F5F5F5'),
     );
@@ -71,10 +63,8 @@ class ExcelExportService {
         TextCellValue(p.registeredBy),
         TextCellValue(p.status),
       ]);
-
-      // Filas alternadas de color
       if (i.isEven) {
-        final row = i + 1; // 0-indexed header already occupies row 0
+        final row = i + 1;
         for (int col = 0; col < headers.length; col++) {
           sheet
               .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row))
@@ -83,61 +73,55 @@ class ExcelExportService {
       }
     }
 
-    // ── Fila de total ────────────────────────────────────────────────────────
     final total = payments.fold<double>(0, (sum, p) => sum + p.amount);
-
     final totalStyle = CellStyle(
       bold: true,
       backgroundColorHex: ExcelColor.fromHexString('#E8EAF6'),
       fontColorHex: ExcelColor.fromHexString('#1A237E'),
     );
-
     final totalRow = payments.length + 1;
     sheet.appendRow([
-      TextCellValue(''),
-      TextCellValue(''),
-      TextCellValue(''),
-      TextCellValue(''),
-      TextCellValue(''),
-      TextCellValue(''),
+      TextCellValue(''), TextCellValue(''), TextCellValue(''),
+      TextCellValue(''), TextCellValue(''), TextCellValue(''),
       TextCellValue('TOTAL:'),
       DoubleCellValue(total),
       TextCellValue('${payments.length} pagos'),
       TextCellValue(''),
     ]);
-
     for (int col = 0; col < headers.length; col++) {
       sheet
-          .cell(CellIndex.indexByColumnRow(
-              columnIndex: col, rowIndex: totalRow))
+          .cell(CellIndex.indexByColumnRow(columnIndex: col, rowIndex: totalRow))
           .cellStyle = totalStyle;
     }
 
-    // ── Ancho de columnas ────────────────────────────────────────────────────
     final colWidths = [16, 12, 8, 26, 18, 30, 16, 14, 28, 12];
     for (int i = 0; i < colWidths.length; i++) {
       sheet.setColumnWidth(i, colWidths[i].toDouble());
     }
 
-    // ── Guardar archivo ──────────────────────────────────────────────────────
-    final dir = await getApplicationDocumentsDirectory();
-    final timestamp = _stampFmt.format(DateTime.now());
-    final filePath = '${dir.path}/reporte_pagos_$timestamp.xlsx';
-
-    final file = File(filePath);
-    await file.writeAsBytes(excel.encode()!);
-    return file;
+    return Uint8List.fromList(excel.encode()!);
   }
 
-  /// Genera el reporte y lo comparte inmediatamente.
-  static Future<void> exportAndShare(
+  // ── Descarga / Compartir ──────────────────────────────────────────────────
+
+  /// En web dispara la descarga del archivo en el navegador.
+  /// En otras plataformas abre el menú de compartir nativo.
+  static Future<void> downloadReport(
     List<Payment> payments, {
-    String subject = 'Reporte de Pagos – Casa Pädi',
+    String? filename,
+    String subject = 'Reporte de Pagos – Aerial Gymnastics',
   }) async {
-    final file = await generateReport(payments);
-    await Share.shareXFiles(
-      [XFile(file.path, mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')],
-      subject: subject,
-    );
+    final bytes = generateBytes(payments);
+    final fname =
+        filename ?? 'reporte_pagos_${_stampFmt.format(DateTime.now())}.xlsx';
+
+    if (kIsWeb) {
+      triggerWebDownload(fname, bytes);
+    } else {
+      await Share.shareXFiles(
+        [XFile.fromData(bytes, name: fname, mimeType: _mimeXlsx)],
+        subject: subject,
+      );
+    }
   }
 }

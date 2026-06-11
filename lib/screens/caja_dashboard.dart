@@ -62,8 +62,9 @@ class _CajaDashboardState extends State<CajaDashboard> {
         );
         return;
       }
-      await ExcelExportService.exportAndShare(
+      await ExcelExportService.downloadReport(
         payments,
+        filename: 'cierre_caja_${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}.xlsx',
         subject: 'Cierre de Caja – ${today.day}/${today.month}/${today.year}',
       );
     } catch (e) {

@@ -10,7 +10,7 @@ App Flutter web para gimnasio Aerial Gymnastics Pachuca.
 ## Reglas críticas (nunca romper)
 - **NUNCA modificar `user_model.dart` directamente.**
 - **Todos los writes a Firestore deben ir por `FirestoreService`** (`lib/services/firestore_service.dart`).
-- `ReceiptCaptureService` y `ExcelExportService` usan `dart:io` — no funcionan en web; tratar su uso como opcional con try/catch.
+- `ReceiptCaptureService` es un stub sin-op en web (devuelve null). `ExcelExportService.downloadReport()` usa `dart:html` Blob en web y `share_plus` en nativo.
 
 ## Arquitectura clave
 - Flujo de pagos correcto: `PaymentDialog` → `PaymentService.registerPayment` → Firestore colección `payments` con campos `paidAt`, `folio` (formato `AER-YYYY-NNNNN`), `registeredBy`.
@@ -27,12 +27,13 @@ App Flutter web para gimnasio Aerial Gymnastics Pachuca.
 - [x] **Tarea 6** — Asistencia consistente sin duplicados: saveAttendance usa ID determinista {studentId}_{yyyy-MM-dd} con SetOptions(merge:true) en lugar de .add(); parámetro groupId agregado; getAttendanceStats cuenta días con 'late' en lugar de minutos; widget AttendanceButton unificado (lib/widgets/attendance_button.dart) con ciclo: sin marcar→present→late→absent→sin marcar, borra doc al volver a sin marcar; ciclos en coach_dashboard.dart y coach_session_screen.dart ahora idénticos.
 - [x] **Tarea 8** — Limpieza de código muerto: eliminados FABs "Fix Colors" y "Migrar" + métodos _executeMigration, _createAllSlots, _get*Slots, _updateCoachColors de `admin_role_builder.dart`; eliminados todos los prints de debug de `schedule_grid_view.dart` y _debugDirectQuery de `admin_dashboard.dart`; eliminados 23 scripts de parcheo de la raíz y 2 archivos de backup. Total: -594 líneas de código muerto.
 
+- [x] **Tarea 9** — ExcelExportService refactorizado: `generateBytes()` → `Uint8List`; `downloadReport()` usa `dart:html` Blob+anchor en web y `share_plus XFile.fromData` en nativo. `ReceiptCaptureService` reemplazado por stub sin-op (eliminados `screenshot` y `path_provider` de pubspec). `flutter build web` pasa limpio.
+- [x] **Analytics** — `admin_analytics_screen.dart` corregido: campo `paidAt` en pagos, `timestamp` en asistencia; `hasError` muestra error en pantalla.
+
 ### Pendiente
 - [ ] **Tarea 4** — Reportes de adeudos y cumpleaños usan datos simulados (`id.contains('a')`, `name.length % 12`). Reemplazar con consultas reales a Firestore.
 - [ ] **Tarea 5** — Registro de alumnas llama `createUserWithEmailAndPassword` desde el cliente → desloguea al admin. Mover a Firebase Function o flujo separado.
 - [ ] **Tarea 7** — Reglas de Firestore no están en el repo (`firestore.rules`). Crear y versionar.
-- [ ] **Tarea 9** — Colecciones `evaluations` y `achievements` no tienen ningún writer en la app. Implementar pantallas de captura.
-- [ ] **Tarea 9** — `rotation_sabana_screen.dart` ignora tap en celda vacía (`if (slot == null) return`). Limpiar.
-- [ ] **Tarea 10** — `ExcelExportService` usa `dart:io`; en web falla silenciosamente. Migrar a `universal_html` / descarga por bytes.
+- [ ] **Tarea 10** — Colecciones `evaluations` y `achievements` no tienen ningún writer en la app. Implementar pantallas de captura.
 - [ ] **Tarea 11** — `admin_objectives_editor.dart` guarda claves de grupo capitalizadas; las consultas usan minúsculas → mismatch. Normalizar.
 - [ ] **Tarea 12** — `trial_class_registration_form.dart` lee `trial_class_requests` sin auth → expone conteo de solicitudes a usuarios anónimos. Mover lógica al backend.
