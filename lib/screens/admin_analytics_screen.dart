@@ -137,9 +137,40 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('attendance')
-          .where('createdAt', isGreaterThan: DateTime.now().subtract(const Duration(days: 30)))
+          .where('timestamp', isGreaterThan: Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 30))))
           .snapshots(),
       builder: (context, attendanceSnapshot) {
+        if (attendanceSnapshot.hasError) {
+          return Center(
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              margin: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.redAccent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error cargando asistencia',
+                    style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    attendanceSnapshot.error.toString(),
+                    style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         if (!attendanceSnapshot.hasData) {
           return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
         }
@@ -357,10 +388,41 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('payments')
-          .orderBy('createdAt', descending: true)
+          .orderBy('paidAt', descending: true)
           .limit(300)
           .snapshots(),
       builder: (context, paymentsSnapshot) {
+        if (paymentsSnapshot.hasError) {
+          return Center(
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              margin: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.redAccent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error cargando pagos',
+                    style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    paymentsSnapshot.error.toString(),
+                    style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         if (!paymentsSnapshot.hasData) {
           return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
         }
@@ -374,10 +436,10 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
         for (final doc in payments) {
           final data = doc.data() as Map<String, dynamic>;
           final amount = (data['amount'] as num?)?.toDouble() ?? 0.0;
-          final createdAt = (data['createdAt'] as Timestamp?)?.toDate();
+          final paidAt = (data['paidAt'] as Timestamp?)?.toDate();
 
-          if (createdAt != null) {
-            final mesKey = DateFormat('MMM yyyy').format(createdAt);
+          if (paidAt != null) {
+            final mesKey = DateFormat('MMM yyyy').format(paidAt);
             ingresosPorMes[mesKey] = (ingresosPorMes[mesKey] ?? 0) + amount;
             pagosPorMes[mesKey] = (pagosPorMes[mesKey] ?? 0) + 1;
           }
@@ -620,9 +682,40 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('payments')
-          .where('createdAt', isGreaterThan: DateTime.now().subtract(const Duration(days: 90)))
+          .where('paidAt', isGreaterThan: Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 90))))
           .snapshots(),
       builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              margin: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.redAccent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.redAccent, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error cargando proyecciones',
+                    style: GoogleFonts.montserrat(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    snapshot.error.toString(),
+                    style: GoogleFonts.poppins(color: Colors.white70, fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator(color: Colors.cyanAccent));
         }

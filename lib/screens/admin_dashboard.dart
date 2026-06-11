@@ -10,7 +10,7 @@ import 'landing_page.dart';
 import 'student_admin_detail_screen.dart';
 import '../utils/image_helper.dart';
 
-import '../models/announcement_model.dart';
+import '../models/event_model.dart';
 import 'admin_reports_hub.dart';
 import 'admin_payment_entry_screen.dart';
 import 'admin_objectives_editor.dart';
@@ -588,6 +588,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
                       onSelected: (selected) { if (selected) setState(() => selectedTarget = 'parent'); },
                       selectedColor: Colors.green.shade100,
                     ),
+                    ChoiceChip(
+                      label: const Text('🤸 Alumnas'),
+                      selected: selectedTarget == 'student',
+                      onSelected: (selected) { if (selected) setState(() => selectedTarget = 'student'); },
+                      selectedColor: Colors.purple.shade100,
+                    ),
                   ],
                 ),
               ],
@@ -599,23 +605,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
               child: const Text('Cancelar', style: TextStyle(color: Colors.white54)),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (titleController.text.isNotEmpty && messageController.text.isNotEmpty) {
-                  final announcement = Announcement(
-                    id: 'a_${DateTime.now().millisecondsSinceEpoch}',
+                  final now = DateTime.now();
+                  final event = SystemEvent(
+                    id: 'ann_${now.millisecondsSinceEpoch}',
                     title: titleController.text,
-                    message: messageController.text,
-                    date: DateTime.now(),
+                    date: now,
+                    color: Colors.orangeAccent,
                     targetRole: selectedTarget,
+                    type: 'announcement',
+                    message: messageController.text,
                   );
-                  FirebaseFirestore.instance.collection('announcements').doc(announcement.id).set({
-                    'title': announcement.title,
-                    'message': announcement.message,
-                    'date': Timestamp.now(),
-                    'targetRole': announcement.targetRole,
-                  });
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Aviso publicado'), backgroundColor: Colors.green));
+                  try {
+                    await FirestoreService.instance.saveEvent(event);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Aviso publicado'), backgroundColor: Colors.green));
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al publicar: $e'), backgroundColor: Colors.red));
+                    }
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor),

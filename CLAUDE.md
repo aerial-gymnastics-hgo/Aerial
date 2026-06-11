@@ -23,9 +23,9 @@ App Flutter web para gimnasio Aerial Gymnastics Pachuca.
 ### Resuelto
 - [x] **Tarea 1** — Backdoor en `auth_service.dart` eliminado (commit `0d9af27`).
 - [x] **Tarea 2** — Cobros de Caja y Admin unificados sobre `PaymentDialog` + `PaymentService` (commit `dfaf61b`). `payment_dialog.dart` robusto en web (preview de recibo en try/catch separado).
+- [x] **Tarea 3** — Avisos unificados: `_showAddAnnouncementDialog` ahora usa `FirestoreService.instance.saveEvent(SystemEvent(..., type:'announcement'))` → escribe a `events`. Añadido chip "🤸 Alumnas" (targetRole:'student'). Eliminado import `announcement_model.dart`.
 
 ### Pendiente
-- [ ] **Tarea 3** — Avisos rotos: admin escribe a `announcements`, dashboards leen `events` con `type=='announcement'`. Unificar en una sola colección.
 - [ ] **Tarea 4** — Reportes de adeudos y cumpleaños usan datos simulados (`id.contains('a')`, `name.length % 12`). Reemplazar con consultas reales a Firestore.
 - [ ] **Tarea 5** — Registro de alumnas llama `createUserWithEmailAndPassword` desde el cliente → desloguea al admin. Mover a Firebase Function o flujo separado.
 - [ ] **Tarea 6** — Colecciones `evaluations` y `achievements` no tienen ningún writer en la app. Implementar pantallas de captura.
