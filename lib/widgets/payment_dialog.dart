@@ -33,6 +33,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
 
   String _paymentMethod = 'Efectivo';
   bool _processing = false;
+  String? _errorMessage;
 
   // Estado post-pago: muestra preview del recibo
   Payment? _completedPayment;
@@ -222,6 +223,32 @@ class _PaymentDialogState extends State<PaymentDialog> {
                       icon: Icons.notes,
                       maxLines: 2,
                     ),
+                    if (_errorMessage != null) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade900.withValues(alpha: 0.4),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.redAccent),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline,
+                                color: Colors.redAccent, size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _errorMessage!,
+                                style: const TextStyle(
+                                    color: Colors.redAccent, fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+
                     const SizedBox(height: 24),
 
                     // Botón de registro
@@ -475,7 +502,10 @@ class _PaymentDialogState extends State<PaymentDialog> {
   Future<void> _registerPayment() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _processing = true);
+    setState(() {
+      _processing = true;
+      _errorMessage = null;
+    });
 
     try {
       final currentUser = fb_auth.FirebaseAuth.instance.currentUser;
@@ -508,13 +538,10 @@ class _PaymentDialogState extends State<PaymentDialog> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _processing = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('❌ Error al registrar pago: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        setState(() {
+          _processing = false;
+          _errorMessage = 'Error al registrar pago: $e';
+        });
       }
     }
   }

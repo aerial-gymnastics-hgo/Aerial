@@ -44,7 +44,9 @@ class Payment {
       concept: json['concept'] as String,
       paymentMethod: json['paymentMethod'] as String,
       folio: json['folio'] as String,
-      paidAt: (json['paidAt'] as Timestamp).toDate(),
+      paidAt: json['paidAt'] is Timestamp
+          ? (json['paidAt'] as Timestamp).toDate()
+          : DateTime.now(),
       registeredBy: json['registeredBy'] as String,
       receiptUrl: json['receiptUrl'] as String?,
       notes: json['notes'] as String?,

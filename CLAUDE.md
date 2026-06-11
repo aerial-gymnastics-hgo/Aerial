@@ -30,6 +30,8 @@ App Flutter web para gimnasio Aerial Gymnastics Pachuca.
 - [x] **Tarea 9** — ExcelExportService refactorizado: `generateBytes()` → `Uint8List`; `downloadReport()` usa `dart:html` Blob+anchor en web y `share_plus XFile.fromData` en nativo. `ReceiptCaptureService` reemplazado por stub sin-op (eliminados `screenshot` y `path_provider` de pubspec). `flutter build web` pasa limpio.
 - [x] **Analytics** — `admin_analytics_screen.dart` corregido: campo `paidAt` en pagos, `timestamp` en asistencia; `hasError` muestra error en pantalla.
 
+- [x] **Tarea 7** — `firestore.rules` creado y versionado. Reglas basadas en rol leído de `users/{uid}.role` en Firestore. `firebase.json` actualizado para deploy con Firebase CLI (`firebase deploy --only firestore:rules`).
+
 ### Pendiente
 - [ ] **Tarea 4** — Reportes de adeudos y cumpleaños usan datos simulados (`id.contains('a')`, `name.length % 12`). Reemplazar con consultas reales a Firestore.
 - [ ] **Tarea 5** — Registro de alumnas llama `createUserWithEmailAndPassword` desde el cliente → desloguea al admin. Mover a Firebase Function o flujo separado.

@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Lee el rol del usuario desde su documento en Firestore.
+    // Firestore retorna {} si el documento no existe, por lo que .get('role','viewer') es seguro.
+    function role() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid))
+               .data.get('role', 'viewer');
+    }
+
+    function isAuth()    { return request.auth != null; }
+    function isAdmin()   { return isAuth() && role() == 'admin'; }
+    function isCaja()    { return isAuth() && role() in ['admin', 'caja']; }
+    function isCoach()   { return isAuth() && role() in ['admin', 'coach']; }
+    function isStaff()   { return isAuth() && role() in ['admin', 'caja', 'coach']; }
+
+    // ── Usuarios ────────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read: if isAuth();
+      allow create: if isAdmin();
+      allow update: if isAdmin() || request.auth.uid == userId;
+      allow delete: if isAdmin();
+    }
+
+    // ── Pagos ───────────────────────────────────────────────────────────────────
+    // Caja y Admin pueden leer y escribir todos los pagos.
+    // Alumna/Padre solo puede leer sus propios pagos.
+    match /payments/{paymentId} {
+      allow read: if isCaja()
+                  || (isAuth() && resource.data.studentId == request.auth.uid);
+      allow create, update, delete: if isCaja();
+    }
+
+    // ── Eventos y avisos ────────────────────────────────────────────────────────
+    match /events/{eventId} {
+      allow read: if isAuth();
+      allow write: if isStaff();
+    }
+
+    // ── Asistencia ──────────────────────────────────────────────────────────────
+    match /attendance/{attendanceId} {
+      allow read: if isStaff()
+                  || (isAuth() && resource.data.studentId == request.auth.uid);
+      allow create, update, delete: if isCoach();
+    }
+
+    // ── Grupos ──────────────────────────────────────────────────────────────────
+    match /groups/{groupId} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+
+    // ── Mesociclos ──────────────────────────────────────────────────────────────
+    match /mesocycles/{mesocycleId} {
+      allow read: if isAuth();
+      allow write: if isStaff();
+    }
+
+    // ── Logros ──────────────────────────────────────────────────────────────────
+    match /achievements/{achievementId} {
+      allow read: if isAuth();
+      allow write: if isStaff();
+    }
+
+    // ── Evaluaciones ────────────────────────────────────────────────────────────
+    match /evaluations/{evaluationId} {
+      allow read: if isAuth();
+      allow write: if isStaff();
+    }
+
+    // ── Rotaciones de coach ─────────────────────────────────────────────────────
+    match /rotations/{rotationId} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+
+    // ── Horarios (asignaciones) ─────────────────────────────────────────────────
+    match /assignments/{assignmentId} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+
+    // ── Solicitudes de clase de prueba ──────────────────────────────────────────
+    // create es público (visitante sin cuenta); lectura y edición solo para Caja.
+    match /trial_class_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isCaja();
+    }
+
+    // ── Avisos legacy ───────────────────────────────────────────────────────────
+    match /announcements/{announcementId} {
+      allow read: if isAuth();
+      allow write: if isAdmin();
+    }
+
+    // ── Métricas ────────────────────────────────────────────────────────────────
+    match /metrics/{metricId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
