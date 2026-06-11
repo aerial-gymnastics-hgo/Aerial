@@ -189,7 +189,7 @@ class _AdminAnalyticsScreenState extends State<AdminAnalyticsScreen>
             groupStats[groupId] = {
               'present': 0,
               'absent': 0,
-              'pending': 0,
+              'late': 0,
               'total': 0,
             };
           }

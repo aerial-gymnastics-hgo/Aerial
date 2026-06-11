@@ -8,6 +8,7 @@ import 'dart:async';
 import '../services/firestore_service.dart';
 import 'student_detail_screen.dart';
 import '../utils/image_helper.dart';
+import '../widgets/attendance_button.dart';
 
 class CoachSessionScreen extends StatefulWidget {
   final User coach;
@@ -210,7 +211,7 @@ class _CoachSessionScreenState extends State<CoachSessionScreen> {
                                   student.group,
                                   style: GoogleFonts.poppins(fontSize: 12, color: Colors.white54),
                                 ),
-                                trailing: _AttendanceButton(primaryColor: primaryColor, coachId: widget.coach.id, studentId: student.id),
+                                trailing: AttendanceButton(primaryColor: primaryColor, coachId: widget.coach.id, studentId: student.id, groupId: student.group),
                               ),
                               const Divider(color: Colors.white12),
                               Row(
@@ -442,35 +443,3 @@ class _AiAssistantSheetState extends State<_AiAssistantSheet> {
   }
 }
 
-class _AttendanceButton extends StatefulWidget {
-  final Color primaryColor;
-  final String coachId;
-  final String studentId;
-  const _AttendanceButton({required this.primaryColor, required this.coachId, required this.studentId});
-
-  @override
-  State<_AttendanceButton> createState() => _AttendanceButtonState();
-}
-
-class _AttendanceButtonState extends State<_AttendanceButton> {
-  int _statusIndex = 0;
-  final List<Color> _colors = [Colors.white38, Colors.orangeAccent, Colors.redAccent];
-  final List<IconData> _icons = [Icons.check_circle_outline, Icons.schedule, Icons.cancel];
-
-  void _toggleStatus() {
-    setState(() {
-      _statusIndex = (_statusIndex + 1) % 3;
-    });
-    final statusStr = _statusIndex == 0 ? 'present' : (_statusIndex == 1 ? 'late' : 'absent');
-    FirestoreService.instance.saveAttendance(widget.coachId, widget.studentId, statusStr);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(_icons[_statusIndex], color: _colors[_statusIndex], size: 32),
-      onPressed: _toggleStatus,
-      tooltip: 'Marcar Asistencia',
-    );
-  }
-}

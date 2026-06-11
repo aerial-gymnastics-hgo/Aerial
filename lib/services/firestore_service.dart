@@ -444,17 +444,31 @@ class FirestoreService {
   // ===========================================================================
   // ESCRITURA EN FIRESTORE (WRITERS) -> ASISTENCIA (ATTENDANCE)
   // ===========================================================================
-  Future<void> saveAttendance(String coachId, String studentId, String status) async {
+  Future<void> saveAttendance({
+    required String coachId,
+    required String studentId,
+    required String status,
+    required String groupId,
+  }) async {
     try {
       final today = DateTime.now();
       final dateStr = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
-      await _db.collection('attendance').add({
-        'coachId': coachId,
-        'studentId': studentId,
-        'status': status,
-        'date': dateStr,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      final docId = '${studentId}_$dateStr';
+
+      if (status.isEmpty) {
+        // Si status es vacío, borrar el documento
+        await _db.collection('attendance').doc(docId).delete();
+      } else {
+        // Usar doc(id).set con merge para crear o actualizar
+        await _db.collection('attendance').doc(docId).set({
+          'coachId': coachId,
+          'studentId': studentId,
+          'status': status,
+          'groupId': groupId,
+          'date': dateStr,
+          'timestamp': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
+      }
     } catch (e) {
       debugPrint('Error guardando asistencia: $e');
       rethrow;
@@ -464,7 +478,7 @@ class FirestoreService {
   /// Calcula retardos y faltas de un alumno en tiempo real basado en Firebase
   Stream<Map<String, int>> getAttendanceStats(String studentId) {
     if (studentId.isEmpty) return Stream.value({'late': 0, 'absent': 0});
-    
+
     return _db.collection('attendance')
         .where('studentId', isEqualTo: studentId)
         .snapshots()
@@ -474,7 +488,7 @@ class FirestoreService {
           for (var doc in snap.docs) {
              final data = doc.data();
              final status = data['status'] ?? 'present';
-             if (status == 'late') lates += 15; // Asumimos 15 min por un registro late
+             if (status == 'late') lates += 1;
              if (status == 'absent') absents += 1;
           }
           return {'late': lates, 'absent': absents};

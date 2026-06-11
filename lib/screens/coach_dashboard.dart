@@ -18,6 +18,7 @@ import 'student_detail_screen.dart';
 import 'calendar_screen.dart';
 import 'usag_study_hub.dart';
 import 'schedule_grid_view.dart';
+import '../widgets/attendance_button.dart';
 import '../services/notification_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -1221,9 +1222,10 @@ class _CoachDashboardState extends State<CoachDashboard> {
                               color: Colors.white54,
                             ),
                           ),
-                          trailing: _AttendanceButton(
+                          trailing: AttendanceButton(
                             coachId: widget.currentUser.id,
                             studentId: student.id,
+                            groupId: student.group,
                           ),
                         ),
                         Divider(color: Colors.white.withOpacity(0.2)),
@@ -1290,67 +1292,3 @@ class _CoachDashboardState extends State<CoachDashboard> {
   }
 }
 
-class _AttendanceButton extends StatefulWidget {
-  final String coachId;
-  final String studentId;
-
-  const _AttendanceButton({required this.coachId, required this.studentId});
-
-  @override
-  State<_AttendanceButton> createState() => _AttendanceButtonState();
-}
-
-class _AttendanceButtonState extends State<_AttendanceButton> {
-  int _statusIndex = 0;
-  final List<Color> _colors = [
-    Colors.white54,
-    Colors.greenAccent,
-    Colors.redAccent
-  ];
-  final List<IconData> _icons = [
-    Icons.check_circle_outline,
-    Icons.check_circle,
-    Icons.cancel
-  ];
-  final List<String> _statusValues = ['pending', 'present', 'absent'];
-
-  void _toggleStatus() async {
-    final newIndex = (_statusIndex + 1) % 3;
-    setState(() {
-      _statusIndex = newIndex;
-    });
-
-    try {
-      await FirestoreService.instance.saveAttendance(
-        widget.coachId,
-        widget.studentId,
-        _statusValues[newIndex],
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Asistencia guardada'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 1)),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('Error guardando: $e'),
-              backgroundColor: Colors.red),
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(_icons[_statusIndex], color: _colors[_statusIndex], size: 32),
-      onPressed: _toggleStatus,
-      tooltip: 'Marcar Asistencia',
-    );
-  }
-}
