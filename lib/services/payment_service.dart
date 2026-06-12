@@ -30,7 +30,8 @@ class PaymentService {
     return 'AER-$year-${nextNumber.toString().padLeft(5, '0')}';
   }
 
-  /// Registra un pago en Firestore y retorna el objeto Payment con ID
+  /// Registra un pago en Firestore y retorna el objeto Payment con ID.
+  /// [folioOverride] permite forzar un folio (ej. para inscripciones 2×1 hermana).
   static Future<Payment> registerPayment({
     required String studentId,
     required String studentName,
@@ -40,8 +41,9 @@ class PaymentService {
     required String paymentMethod,
     String? notes,
     required String registeredBy,
+    String? folioOverride,
   }) async {
-    final folio = await generateFolio();
+    final folio = folioOverride ?? await generateFolio();
     final now = DateTime.now();
 
     final payment = Payment(

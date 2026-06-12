@@ -301,13 +301,74 @@ class _CajaDashboardState extends State<CajaDashboard> {
               ),
             ),
             const Divider(color: Colors.white10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildQuickAction(Icons.payment, 'Cobrar', Colors.green, () => _showPaymentDialog(student)),
-                _buildQuickAction(Icons.edit, 'Editar', Colors.blue, () => _showEditStudentDialog(student)),
-                _buildQuickAction(Icons.history, 'Historial', Colors.orange, () {}),
-              ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 4),
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showPaymentDialog(student),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade700,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                      icon: const Icon(Icons.payments, color: Colors.white, size: 18),
+                      label: Text(
+                        student.monthlyFee != null
+                            ? 'MENSUALIDAD  \$${student.monthlyFee!.toStringAsFixed(0)}'
+                            : 'MENSUALIDAD  \$800',
+                        style: GoogleFonts.montserrat(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () =>
+                              _showPaymentDialog(student, PaymentConcept.visita),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.blueAccent),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: Text('VISITA  \$150',
+                              style: GoogleFonts.montserrat(
+                                  fontSize: 11,
+                                  color: Colors.blueAccent,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => _showPaymentDialog(
+                              student, PaymentConcept.inscripcion),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.orangeAccent),
+                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                          ),
+                          child: Text('INSCRIPCIÓN  \$500',
+                              style: GoogleFonts.montserrat(
+                                  fontSize: 11,
+                                  color: Colors.orangeAccent,
+                                  fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -331,31 +392,18 @@ class _CajaDashboardState extends State<CajaDashboard> {
     );
   }
 
-  Widget _buildQuickAction(IconData icon, String label, Color color, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            Icon(icon, size: 16, color: color),
-            const SizedBox(width: 4),
-            Text(label, style: GoogleFonts.poppins(fontSize: 11, color: color)),
-          ],
-        ),
-      ),
-    );
-  }
-
   // --- DIALOGS ---
 
-  void _showPaymentDialog(User student) {
+  void _showPaymentDialog(User student,
+      [PaymentConcept concept = PaymentConcept.mensualidad]) {
     showDialog(
       context: context,
       builder: (_) => PaymentDialog(
         studentId: student.id,
         studentName: student.name,
         groupId: student.group,
+        concept: concept,
+        monthlyFee: student.monthlyFee,
       ),
     );
   }
