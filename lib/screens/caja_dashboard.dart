@@ -404,6 +404,7 @@ class _CajaDashboardState extends State<CajaDashboard> {
         groupId: student.group,
         concept: concept,
         monthlyFee: student.monthlyFee,
+        guardianPhone: student.guardianPhone,
       ),
     );
   }

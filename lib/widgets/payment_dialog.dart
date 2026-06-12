@@ -1,7 +1,11 @@
+import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/payment_model.dart';
 import '../models/user_model.dart';
 import '../services/firestore_service.dart';
@@ -11,13 +15,14 @@ import '../widgets/payment_receipt.dart';
 
 enum PaymentConcept { mensualidad, visita, inscripcion }
 
-/// Modal para registrar un pago y generar el recibo visual.
+/// Modal para registrar un pago, mostrar el recibo y enviarlo por WhatsApp.
 class PaymentDialog extends StatefulWidget {
   final String studentId;
   final String studentName;
   final String groupId;
   final PaymentConcept concept;
   final double? monthlyFee;
+  final String? guardianPhone;
 
   const PaymentDialog({
     super.key,
@@ -26,6 +31,7 @@ class PaymentDialog extends StatefulWidget {
     required this.groupId,
     this.concept = PaymentConcept.mensualidad,
     this.monthlyFee,
+    this.guardianPhone,
   });
 
   @override
@@ -38,6 +44,10 @@ class _PaymentDialogState extends State<PaymentDialog> {
   final _conceptController = TextEditingController();
   final _notesController = TextEditingController();
   final _hermanaSearchController = TextEditingController();
+  final _phoneController = TextEditingController();
+
+  // RepaintBoundary key for receipt image capture
+  final _receiptKey = GlobalKey();
 
   String _paymentMethod = 'Efectivo';
   bool _processing = false;
@@ -46,7 +56,14 @@ class _PaymentDialogState extends State<PaymentDialog> {
   Payment? _completedPayment;
   Uint8List? _receiptPreview;
 
-  // Estado 2×1 — solo aplica cuando concept == inscripcion
+  // WhatsApp flow state
+  bool _showPhoneCapture = false;
+  bool _sendingWhatsApp = false;
+  String? _uploadedReceiptUrl;
+  bool _receiptUploadAttempted = false;
+  String? _savedPhone;
+
+  // 2×1 state — solo para inscripcion
   bool _hermanaToggle = false;
   User? _hermanaSelected;
   String _hermanaQuery = '';
@@ -86,6 +103,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
     _conceptController.dispose();
     _notesController.dispose();
     _hermanaSearchController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -297,9 +315,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
           ),
           if (_hermanaToggle) ...[
             const SizedBox(height: 8),
-            _hermanaSelected == null
-                ? _buildHermanaSearch()
-                : _buildHermanaChip(),
+            _hermanaSelected == null ? _buildHermanaSearch() : _buildHermanaChip(),
           ],
         ],
       ),
@@ -455,7 +471,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
     );
   }
 
-  // ── Vista del recibo generado ─────────────────────────────────────
+  // ── Vista del recibo + acciones WhatsApp ──────────────────────────
 
   Widget _buildReceiptView() {
     final payment = _completedPayment!;
@@ -468,6 +484,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Header verde de éxito
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -492,65 +509,31 @@ class _PaymentDialogState extends State<PaymentDialog> {
               ],
             ),
           ),
+
           Flexible(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
+                  // Recibo — envuelto en RepaintBoundary para captura
                   if (_receiptPreview != null)
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.memory(_receiptPreview!),
                     )
                   else
-                    PaymentReceipt(payment: payment),
+                    RepaintBoundary(
+                      key: _receiptKey,
+                      child: PaymentReceipt(payment: payment),
+                    ),
+
                   const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _actionButton(
-                          icon: Icons.share,
-                          label: 'Compartir',
-                          color: const Color(0xFF3949AB),
-                          onTap: () => ReceiptCaptureService.shareReceipt(
-                              payment,
-                              context: context),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _actionButton(
-                          icon: Icons.save_alt,
-                          label: 'Guardar',
-                          color: const Color(0xFF00897B),
-                          onTap: () async {
-                            final path =
-                                await ReceiptCaptureService.saveReceipt(payment);
-                            if (mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(path != null
-                                      ? '✅ Guardado en Documentos'
-                                      : '❌ Error al guardar'),
-                                  backgroundColor:
-                                      path != null ? Colors.green : Colors.red,
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _actionButton(
-                          icon: Icons.close,
-                          label: 'Cerrar',
-                          color: const Color(0xFF616161),
-                          onTap: () => Navigator.pop(context),
-                        ),
-                      ),
-                    ],
-                  ),
+
+                  // Botones de acción o captura de teléfono
+                  if (_showPhoneCapture)
+                    _buildPhoneCaptureSection(payment)
+                  else
+                    _buildReceiptActions(payment),
                 ],
               ),
             ),
@@ -560,25 +543,153 @@ class _PaymentDialogState extends State<PaymentDialog> {
     );
   }
 
-  Widget _actionButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return ElevatedButton.icon(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      icon: Icon(icon, color: Colors.white, size: 16),
-      label: Text(label,
-          style: GoogleFonts.inter(
-              color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+  Widget _buildReceiptActions(Payment payment) {
+    return Column(
+      children: [
+        // Primario: WhatsApp
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _sendingWhatsApp ? null : () => _sendWhatsApp(payment),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF25D366),
+              disabledBackgroundColor:
+                  const Color(0xFF25D366).withValues(alpha: 0.5),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            icon: _sendingWhatsApp
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
+                  )
+                : const Icon(Icons.send, color: Colors.white),
+            label: Text(
+              _sendingWhatsApp ? 'Preparando...' : 'Enviar por WhatsApp',
+              style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        // Secundario: Cerrar
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () => Navigator.pop(context),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.white24),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text('Cerrar',
+                style: GoogleFonts.inter(color: Colors.white70, fontSize: 14)),
+          ),
+        ),
+      ],
     );
   }
+
+  Widget _buildPhoneCaptureSection(Payment payment) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF2A2A3E),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.orangeAccent.withValues(alpha: 0.4)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.info_outline, color: Colors.orangeAccent, size: 16),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'No hay teléfono del tutor registrado. Captúralo para enviar.',
+                  style: GoogleFonts.inter(
+                      color: Colors.orangeAccent, fontSize: 11),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text('Teléfono del tutor (10 dígitos)',
+            style: GoogleFonts.inter(color: Colors.white70, fontSize: 12)),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                maxLength: 10,
+                style: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+                decoration: InputDecoration(
+                  prefixText: '+52 ',
+                  prefixStyle: GoogleFonts.inter(
+                      color: Colors.white54, fontSize: 14),
+                  hintText: '5512345678',
+                  hintStyle: const TextStyle(color: Colors.white38),
+                  counterText: '',
+                  filled: true,
+                  fillColor: const Color(0xFF2A2A3E),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF3A3A4E)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF3A3A4E)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: Color(0xFF25D366)),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: _sendingWhatsApp
+                  ? null
+                  : () => _savePhoneAndSend(payment),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF25D366),
+                disabledBackgroundColor:
+                    const Color(0xFF25D366).withValues(alpha: 0.5),
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+              child: _sendingWhatsApp
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : Text('Guardar y enviar',
+                      style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13)),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // ── Helpers de formulario ─────────────────────────────────────────
 
   Widget _buildField({
     required TextEditingController controller,
@@ -664,7 +775,8 @@ class _PaymentDialogState extends State<PaymentDialog> {
       final registeredBy = currentUser?.email ?? 'caja';
 
       final double amount = is2x1 ? 250.0 : double.parse(_amountController.text);
-      final String concept = is2x1 ? 'Inscripción 2×1' : _conceptController.text.trim();
+      final String concept =
+          is2x1 ? 'Inscripción 2×1' : _conceptController.text.trim();
 
       final payment = await PaymentService.registerPayment(
         studentId: widget.studentId,
@@ -709,6 +821,134 @@ class _PaymentDialogState extends State<PaymentDialog> {
           _processing = false;
           _errorMessage = 'Error al registrar pago: $e';
         });
+      }
+    }
+  }
+
+  // ── Lógica de WhatsApp ────────────────────────────────────────────
+
+  Future<void> _sendWhatsApp(Payment payment) async {
+    setState(() => _sendingWhatsApp = true);
+
+    // Paso A+B: Capturar imagen del recibo y subirla a Storage (solo una vez)
+    if (!_receiptUploadAttempted) {
+      _receiptUploadAttempted = true;
+      try {
+        final ctx = _receiptKey.currentContext;
+        if (ctx != null) {
+          final boundary =
+              ctx.findRenderObject() as RenderRepaintBoundary;
+          final image = await boundary.toImage(pixelRatio: 2.0);
+          final byteData =
+              await image.toByteData(format: ui.ImageByteFormat.png);
+          final bytes = byteData!.buffer.asUint8List();
+
+          final ref = FirebaseStorage.instance
+              .ref('receipts/${payment.folio}.png');
+          await ref.putData(
+              bytes, SettableMetadata(contentType: 'image/png'));
+          _uploadedReceiptUrl = await ref.getDownloadURL();
+        }
+      } catch (_) {
+        // Continúa sin imagen
+      }
+    }
+
+    // Paso C: Obtener teléfono del tutor
+    final effectivePhone =
+        widget.guardianPhone?.isNotEmpty == true
+            ? widget.guardianPhone!
+            : _savedPhone;
+
+    if (effectivePhone == null) {
+      if (mounted) {
+        setState(() {
+          _sendingWhatsApp = false;
+          _showPhoneCapture = true;
+        });
+      }
+      return;
+    }
+
+    // Paso D: Abrir WhatsApp
+    await _launchWhatsApp(payment, effectivePhone);
+    if (mounted) setState(() => _sendingWhatsApp = false);
+  }
+
+  Future<void> _savePhoneAndSend(Payment payment) async {
+    final phone = _phoneController.text.trim();
+    if (phone.length != 10 || int.tryParse(phone) == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ingresa un número de 10 dígitos.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _sendingWhatsApp = true);
+
+    // Guardar en Firestore vía FirestoreService
+    try {
+      await FirestoreService.instance.updateStudentProfile(
+          widget.studentId, {'guardianPhone': phone});
+    } catch (_) {
+      // Fallo silencioso — igualmente enviamos
+    }
+
+    _savedPhone = phone;
+    if (mounted) setState(() => _showPhoneCapture = false);
+
+    await _launchWhatsApp(payment, phone);
+    if (mounted) setState(() => _sendingWhatsApp = false);
+  }
+
+  Future<void> _launchWhatsApp(Payment payment, String phone) async {
+    final d = payment.paidAt;
+    final dateStr = '${d.day} de ${_months[d.month - 1]} ${d.year}';
+    final cleanPhone = phone.replaceAll(RegExp(r'\D'), '');
+    final amountStr = '\$${payment.amount.toStringAsFixed(0)}';
+
+    final msg = StringBuffer();
+    msg.writeln(
+        'Hola, aquí está el comprobante de pago de ${payment.studentName}.');
+    msg.writeln('Concepto: ${payment.concept}');
+    msg.writeln('Monto: $amountStr');
+    msg.writeln('Folio: ${payment.folio}');
+    msg.writeln('Fecha: $dateStr');
+    if (_uploadedReceiptUrl != null) {
+      msg.writeln('Comprobante: $_uploadedReceiptUrl');
+    }
+    msg.write('— Aerial Gymnastics Pachuca');
+
+    final waUri = Uri.parse(
+        'https://wa.me/52$cleanPhone?text=${Uri.encodeComponent(msg.toString())}');
+
+    try {
+      await launchUrl(waUri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No se pudo abrir WhatsApp: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+
+    // Paso E: si la imagen no se pudo subir, avisar con snackbar amarillo
+    if (_receiptUploadAttempted && _uploadedReceiptUrl == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Comprobante enviado sin imagen.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
       }
     }
   }
