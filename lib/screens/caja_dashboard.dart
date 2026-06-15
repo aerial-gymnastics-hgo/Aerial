@@ -6,6 +6,7 @@ import '../services/firestore_service.dart';
 import '../services/analytics_service.dart';
 import '../services/excel_export_service.dart';
 import '../widgets/payment_dialog.dart';
+import '../widgets/cierre_caja_dialog.dart';
 import 'landing_page.dart';
 import 'analytics_dashboard.dart';
 
@@ -119,11 +120,30 @@ class _CajaDashboardState extends State<CajaDashboard> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _exportDailyClosure,
-        backgroundColor: Colors.green.shade700,
-        icon: const Icon(Icons.file_download, color: Colors.white),
-        label: Text('EXPORTAR CIERRE', style: GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 12)),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'fab_excel',
+            onPressed: _exportDailyClosure,
+            backgroundColor: Colors.teal.shade700,
+            tooltip: 'Exportar Excel',
+            child: const Icon(Icons.table_chart, color: Colors.white, size: 18),
+          ),
+          const SizedBox(height: 8),
+          FloatingActionButton.extended(
+            heroTag: 'fab_cierre',
+            onPressed: () => showDialog(
+              context: context,
+              builder: (_) => const CierreCajaDialog(),
+            ),
+            backgroundColor: const Color(0xFF3949AB),
+            icon: const Icon(Icons.summarize_outlined, color: Colors.white),
+            label: Text('CIERRE DE CAJA',
+                style: GoogleFonts.montserrat(fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
+        ],
       ),
     );
   }

@@ -178,6 +178,146 @@ class PdfService {
     return doc.save();
   }
 
+  static Future<Uint8List> generateCierrePdf(Map<String, dynamic> cierre) async {
+    final doc = pw.Document();
+    final dateFmt = DateFormat('dd/MM/yyyy HH:mm', 'es_MX');
+    final currencyFmt = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
+    final fechaTs = cierre['fecha'];
+    final fechaStr = fechaTs is DateTime
+        ? dateFmt.format(fechaTs)
+        : dateFmt.format((fechaTs as dynamic).toDate());
+    final generadoStr = dateFmt.format(DateTime.now());
+
+    final pagos = (cierre['pagos'] as List<dynamic>? ?? []);
+
+    final tableData = pagos.map<List<String>>((p) {
+      final paidAt = p['paidAt'];
+      final paidAtStr = paidAt is DateTime
+          ? DateFormat('HH:mm').format(paidAt)
+          : DateFormat('HH:mm').format((paidAt as dynamic).toDate());
+      return [
+        p['folio']?.toString() ?? '',
+        paidAtStr,
+        p['studentName']?.toString() ?? '',
+        p['concept']?.toString() ?? '',
+        p['paymentMethod']?.toString() ?? '',
+        currencyFmt.format((p['amount'] as num?)?.toDouble() ?? 0),
+      ];
+    }).toList();
+
+    doc.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.letter,
+        margin: const pw.EdgeInsets.all(28),
+        build: (pw.Context context) => [
+          // Encabezado
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text('AERIAL GYMNASTICS',
+                      style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColors.purple)),
+                  pw.Text('Gimnasia Artística · Pachuca, Hgo.',
+                      style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey)),
+                ],
+              ),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.end,
+                children: [
+                  pw.Text('CIERRE DE CAJA',
+                      style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                  pw.Text('Generado: $generadoStr',
+                      style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey)),
+                ],
+              ),
+            ],
+          ),
+          pw.Divider(color: PdfColors.purple),
+          pw.SizedBox(height: 8),
+
+          // Datos del cierre
+          pw.Row(children: [
+            pw.Expanded(child: pw.Text('Fecha: $fechaStr', style: const pw.TextStyle(fontSize: 10))),
+            pw.Expanded(child: pw.Text('Turno: ${cierre['turno'] ?? ''}', style: const pw.TextStyle(fontSize: 10))),
+            pw.Expanded(child: pw.Text('Cajero: ${cierre['cajero'] ?? ''}', style: const pw.TextStyle(fontSize: 10))),
+          ]),
+          pw.SizedBox(height: 16),
+
+          // Tabla de pagos
+          pw.Text('DETALLE DE PAGOS',
+              style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.grey700)),
+          pw.SizedBox(height: 6),
+          pw.Table.fromTextArray(
+            headers: ['Folio', 'Hora', 'Alumna', 'Concepto', 'Método', 'Monto'],
+            data: tableData,
+            headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white, fontSize: 9),
+            headerDecoration: const pw.BoxDecoration(color: PdfColors.indigo),
+            cellStyle: const pw.TextStyle(fontSize: 9),
+            cellHeight: 22,
+            cellAlignments: {
+              0: pw.Alignment.centerLeft,
+              1: pw.Alignment.center,
+              2: pw.Alignment.centerLeft,
+              3: pw.Alignment.centerLeft,
+              4: pw.Alignment.center,
+              5: pw.Alignment.centerRight,
+            },
+          ),
+          pw.SizedBox(height: 20),
+
+          // Totales
+          pw.Text('RESUMEN DE TOTALES',
+              style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.grey700)),
+          pw.SizedBox(height: 8),
+          pw.Container(
+            padding: const pw.EdgeInsets.all(12),
+            decoration: pw.BoxDecoration(
+              color: PdfColors.grey100,
+              border: pw.Border.all(color: PdfColors.grey300),
+            ),
+            child: pw.Column(
+              children: [
+                _cierreTotalRow('Efectivo', currencyFmt.format(cierre['totalEfectivo'] ?? 0)),
+                _cierreTotalRow('Tarjeta', currencyFmt.format(cierre['totalTarjeta'] ?? 0)),
+                _cierreTotalRow('Transferencia', currencyFmt.format(cierre['totalTransferencia'] ?? 0)),
+                pw.Divider(color: PdfColors.grey400),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('TOTAL GENERAL',
+                        style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold)),
+                    pw.Text(currencyFmt.format(cierre['totalGeneral'] ?? 0),
+                        style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: PdfColors.purple)),
+                  ],
+                ),
+                pw.SizedBox(height: 4),
+                pw.Text('${cierre['totalPagos'] ?? 0} pagos registrados',
+                    style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return doc.save();
+  }
+
+  static pw.Widget _cierreTotalRow(String label, String value) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 3),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text(label, style: const pw.TextStyle(fontSize: 11, color: PdfColors.grey700)),
+          pw.Text(value, style: const pw.TextStyle(fontSize: 11)),
+        ],
+      ),
+    );
+  }
+
   static pw.Widget _buildHeader(String title, String date) {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,

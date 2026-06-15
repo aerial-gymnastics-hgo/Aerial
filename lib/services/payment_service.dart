@@ -4,15 +4,19 @@ import '../models/payment_model.dart';
 class PaymentService {
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  /// Genera un folio único con el formato AER-YYYY-NNNNN
+  /// Genera un folio único con el formato AER-YYYY-MMDD-NNNNN.
+  /// El secuencial NNNNN reinicia cada día desde 00001.
   static Future<String> generateFolio() async {
     final now = DateTime.now();
     final year = now.year;
+    final monthDay =
+        '${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+    final prefix = 'AER-$year-$monthDay-';
 
     final snapshot = await _db
         .collection('payments')
-        .where('folio', isGreaterThanOrEqualTo: 'AER-$year-')
-        .where('folio', isLessThan: 'AER-${year + 1}-')
+        .where('folio', isGreaterThanOrEqualTo: prefix)
+        .where('folio', isLessThan: '${prefix}z') // 'z' > cualquier dígito
         .orderBy('folio', descending: true)
         .limit(1)
         .get();
@@ -21,13 +25,14 @@ class PaymentService {
 
     if (snapshot.docs.isNotEmpty) {
       final lastFolio = snapshot.docs.first.data()['folio'] as String? ?? '';
+      // formato: AER-YYYY-MMDD-NNNNN → parts[3] = NNNNN
       final parts = lastFolio.split('-');
-      if (parts.length == 3) {
-        nextNumber = (int.tryParse(parts[2]) ?? 0) + 1;
+      if (parts.length == 4) {
+        nextNumber = (int.tryParse(parts[3]) ?? 0) + 1;
       }
     }
 
-    return 'AER-$year-${nextNumber.toString().padLeft(5, '0')}';
+    return '$prefix${nextNumber.toString().padLeft(5, '0')}';
   }
 
   /// Registra un pago en Firestore y retorna el objeto Payment con ID.
