@@ -357,6 +357,33 @@ class FirestoreService {
     });
   }
 
+  /// IDs de alumnas con pago de mensualidad registrado dentro del mes actual.
+  /// Una sola query por rango de `paidAt`; el filtro por concepto se hace en
+  /// cliente porque Firestore no soporta "contains" sobre strings.
+  Future<Set<String>> getStudentIdsPaidThisMonth() async {
+    try {
+      final now = DateTime.now();
+      final start = DateTime(now.year, now.month, 1);
+      final end = DateTime(now.year, now.month + 1, 1);
+      final snap = await _db.collection('payments')
+          .where('paidAt', isGreaterThanOrEqualTo: Timestamp.fromDate(start))
+          .where('paidAt', isLessThan: Timestamp.fromDate(end))
+          .get();
+      final ids = <String>{};
+      for (var doc in snap.docs) {
+        final data = doc.data();
+        final concept = (data['concept'] ?? '').toString().toLowerCase();
+        if (!concept.contains('mensualidad')) continue;
+        final studentId = data['studentId'];
+        if (studentId is String && studentId.isNotEmpty) ids.add(studentId);
+      }
+      return ids;
+    } catch (e) {
+      debugPrint('Error en getStudentIdsPaidThisMonth: $e');
+      rethrow;
+    }
+  }
+
   Stream<List<Map<String, dynamic>>> getFinancialStatus(String studentId) {
     if (studentId.isEmpty) return Stream.value([]);
     

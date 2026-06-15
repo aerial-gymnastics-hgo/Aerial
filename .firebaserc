@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "Aerial": "aerial-temporal",
+    "default": "aerial-temporal"
+  },
+  "targets": {},
+  "etags": {}
+}

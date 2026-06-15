@@ -32,10 +32,10 @@ App Flutter web para gimnasio Aerial Gymnastics Pachuca.
 
 - [x] **Tarea 7** — `firestore.rules` creado y versionado. Reglas basadas en rol leído de `users/{uid}.role` en Firestore. `firebase.json` actualizado para deploy con Firebase CLI (`firebase deploy --only firestore:rules`).
 
+- [x] **Tarea 4** — Reportes con datos reales: nuevo `FirestoreService.getStudentIdsPaidThisMonth()` (una query por rango de `paidAt` del mes, filtro de concepto "Mensualidad" en cliente). Deudora = sin pago de mensualidad este mes; monto = `monthlyFee` de la alumna o del grupo (`getGroupInfo`). Cumpleaños usa `birthDate` real (filtra por mes, excluye nulls, ordena por día). Aplicado en `admin_reports_hub.dart`, `pdf_service.dart` (`generateDebtorsPdf` ahora recibe `Map<String,double>` de montos) y `admin_payment_entry_screen.dart` (refresca al cerrar PaymentDialog).
+
 ### Pendiente
-- [ ] **Tarea 4** — Reportes de adeudos y cumpleaños usan datos simulados (`id.contains('a')`, `name.length % 12`). Reemplazar con consultas reales a Firestore.
 - [ ] **Tarea 5** — Registro de alumnas llama `createUserWithEmailAndPassword` desde el cliente → desloguea al admin. Mover a Firebase Function o flujo separado.
-- [ ] **Tarea 7** — Reglas de Firestore no están en el repo (`firestore.rules`). Crear y versionar.
 - [ ] **Tarea 10** — Colecciones `evaluations` y `achievements` no tienen ningún writer en la app. Implementar pantallas de captura.
 - [ ] **Tarea 11** — `admin_objectives_editor.dart` guarda claves de grupo capitalizadas; las consultas usan minúsculas → mismatch. Normalizar.
 - [ ] **Tarea 12** — `trial_class_registration_form.dart` lee `trial_class_requests` sin auth → expone conteo de solicitudes a usuarios anónimos. Mover lógica al backend.

@@ -18,6 +18,15 @@ build/
 .DS_Store
 Thumbs.db
 
+# Secretos / credenciales (NUNCA commitear)
+**/serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
+# Config local de herramientas
+.claude/
+.agents/
+skills-lock.json
+
 # Otros proyectos que no sean este
 InmobiliariaHidalgo/
 aerial-gymnastics-app/

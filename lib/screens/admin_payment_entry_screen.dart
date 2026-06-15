@@ -21,6 +21,7 @@ class _AdminPaymentEntryScreenState extends State<AdminPaymentEntryScreen> {
   bool _showAll = false;
   List<User> _allStudents = [];
   List<User> _students = [];
+  Set<String> _paidIds = {};
   bool _isLoading = true;
   StreamSubscription? _sub;
 
@@ -44,22 +45,28 @@ class _AdminPaymentEntryScreenState extends State<AdminPaymentEntryScreen> {
   void _filterDebtStudents() async {
     setState(() => _isLoading = true);
 
-    // Aquí idealmente tendrías la deuda de Firebase
-    // pero como usas el Stub que lee sincrónicamente el status de FirestoreService:
-    final List<User> filtered = [];
-
-    for (var s in _allStudents) {
-      // Como el Stub de getFinancialStatus devuelve un future/stream, hay que mockear localmente o asumirlo
-      // En el stub actual, hasDebt = true si contiene 'a' u 'o'
-      final hasDebt =
-          s.id.toLowerCase().contains('a') || s.id.toLowerCase().contains('o');
-      if (_showAll || hasDebt) {
-        filtered.add(s);
+    Set<String> paidIds = {};
+    try {
+      paidIds = await FirestoreService.instance.getStudentIdsPaidThisMonth();
+    } catch (e) {
+      // Sin datos de pagos mostramos todas para no ocultar a nadie en caja
+      if (mounted) {
+        setState(() {
+          _paidIds = {};
+          _students = List.of(_allStudents);
+          _isLoading = false;
+        });
       }
+      return;
     }
+
+    final filtered = _allStudents
+        .where((s) => _showAll || !paidIds.contains(s.id))
+        .toList();
 
     if (mounted) {
       setState(() {
+        _paidIds = paidIds;
         _students = filtered;
         _isLoading = false;
       });
@@ -199,7 +206,7 @@ class _AdminPaymentEntryScreenState extends State<AdminPaymentEntryScreen> {
   }
 
   Widget _buildStudentTile(User student) {
-    final isClear = student.paymentStatus == 'current';
+    final isClear = _paidIds.contains(student.id);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -289,6 +296,6 @@ class _AdminPaymentEntryScreenState extends State<AdminPaymentEntryScreen> {
         studentName: student.name,
         groupId: student.group,
       ),
-    );
+    ).then((_) => _filterDebtStudents());
   }
 }

@@ -346,22 +346,54 @@ class DebtorsReportScreen extends StatefulWidget {
 
 class _DebtorsReportScreenState extends State<DebtorsReportScreen> {
   List<User> _debtors = [];
+  Map<String, double> _debtAmounts = {};
+  bool _isLoading = true;
+  String? _error;
   StreamSubscription? _sub;
 
   @override
   void initState() {
     super.initState();
-    _sub = FirestoreService.instance.getStudents().listen((data) {
+    _sub = FirestoreService.instance.getStudents().listen(_computeDebtors);
+  }
+
+  Future<void> _computeDebtors(List<User> students) async {
+    try {
+      final paidIds =
+          await FirestoreService.instance.getStudentIdsPaidThisMonth();
+      final debtors =
+          students.where((s) => !paidIds.contains(s.id)).toList();
+
+      final groupFees = <String, double>{};
+      final amounts = <String, double>{};
+      for (var s in debtors) {
+        double? fee = s.monthlyFee;
+        if (fee == null) {
+          if (!groupFees.containsKey(s.group)) {
+            final info = await FirestoreService.instance.getGroupInfo(s.group);
+            groupFees[s.group] = info?.monthlyFee ?? 0;
+          }
+          fee = groupFees[s.group];
+        }
+        amounts[s.id] = fee ?? 0;
+      }
+
       if (mounted) {
         setState(() {
-          _debtors = data
-              .where((s) =>
-                  s.id.toLowerCase().contains('a') ||
-                  s.id.toLowerCase().contains('o'))
-              .toList();
+          _debtors = debtors;
+          _debtAmounts = amounts;
+          _isLoading = false;
+          _error = null;
         });
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _error = 'Error consultando pagos: $e';
+        });
+      }
+    }
   }
 
   @override
@@ -372,7 +404,8 @@ class _DebtorsReportScreenState extends State<DebtorsReportScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double totalDebt = _debtors.length * 1200.0;
+    final totalDebt =
+        _debtAmounts.values.fold<double>(0, (sum, amount) => sum + amount);
 
     return Container(
       decoration: BoxDecoration(
@@ -395,11 +428,24 @@ class _DebtorsReportScreenState extends State<DebtorsReportScreen> {
           actions: [
             IconButton(
                 icon: const Icon(Icons.print),
-                onPressed: () => PdfService.generateDebtorsPdf(_debtors),
+                onPressed: () =>
+                    PdfService.generateDebtorsPdf(_debtors, _debtAmounts),
                 tooltip: 'Imprimir Reporte'),
           ],
         ),
-        body: Column(
+        body: _isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: Colors.redAccent))
+            : _error != null
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(_error!,
+                          textAlign: TextAlign.center,
+                          style:
+                              GoogleFonts.poppins(color: Colors.redAccent)),
+                    ))
+                : Column(
           children: [
             Container(
               padding: const EdgeInsets.all(16),
@@ -469,7 +515,8 @@ class _DebtorsReportScreenState extends State<DebtorsReportScreen> {
                                   title: Text('Mensualidad Vencida',
                                       style: GoogleFonts.poppins(
                                           fontSize: 13, color: Colors.white70)),
-                                  trailing: Text('\$1200.0',
+                                  trailing: Text(
+                                      '\$${(_debtAmounts[student.id] ?? 0).toStringAsFixed(2)}',
                                       style: GoogleFonts.poppins(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.redAccent)),
@@ -510,8 +557,9 @@ class _BirthdaysReportScreenState extends State<BirthdaysReportScreen> {
       if (mounted) {
         setState(() {
           _birthdayGirls = data
-              .where((s) => s.name.length % 12 + 1 == currentMonth)
-              .toList();
+              .where((s) => s.birthDate?.month == currentMonth)
+              .toList()
+            ..sort((a, b) => a.birthDate!.day.compareTo(b.birthDate!.day));
         });
       }
     });
@@ -559,7 +607,7 @@ class _BirthdaysReportScreenState extends State<BirthdaysReportScreen> {
                 itemCount: _birthdayGirls.length,
                 itemBuilder: (context, index) {
                   final student = _birthdayGirls[index];
-                  final day = (student.name.length * 3) % 28 + 1;
+                  final day = student.birthDate!.day;
 
                   return Container(
                     margin: const EdgeInsets.only(bottom: 12),
