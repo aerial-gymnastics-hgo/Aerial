@@ -13,6 +13,7 @@ import '../services/firestore_service.dart';
 import '../services/payment_service.dart';
 import '../services/pdf_service.dart';
 import '../services/receipt_capture_service.dart';
+import '../utils/web_download.dart';
 import '../widgets/payment_receipt.dart';
 
 enum PaymentConcept { mensualidad, visita, inscripcion }
@@ -61,8 +62,8 @@ class _PaymentDialogState extends State<PaymentDialog> {
   // WhatsApp flow state
   bool _showPhoneCapture = false;
   bool _sendingWhatsApp = false;
-  String? _uploadedReceiptUrl;
-  bool _receiptUploadAttempted = false;
+  String? _uploadedReceiptUrl;   // solo en nativo (imagen a Storage)
+  bool _receiptUploadAttempted = false;  // solo en nativo
   String? _savedPhone;
 
   // 2×1 state — solo para inscripcion
@@ -848,44 +849,37 @@ class _PaymentDialogState extends State<PaymentDialog> {
       return;
     }
 
-    // Resetear URL de recibo para esta sesión de envío
-    _uploadedReceiptUrl = null;
-
     if (kIsWeb) {
-      // WEB: Generar PDF, subir a Storage, enviar por WhatsApp
-      _generateAndUploadPdfWeb(payment, effectivePhone);
+      // WEB: Descargar PDF localmente + abrir WhatsApp con texto
+      await _downloadPdfAndOpenWhatsAppWeb(payment, effectivePhone);
     } else {
       // NATIVO: Capturar imagen, subir a Storage, enviar por WhatsApp
+      _uploadedReceiptUrl = null;
       _captureImageAndSendNative(payment, effectivePhone);
     }
   }
 
-  Future<void> _generateAndUploadPdfWeb(Payment payment, String phone) async {
+  Future<void> _downloadPdfAndOpenWhatsAppWeb(Payment payment, String phone) async {
+    // Generar PDF y descargarlo al dispositivo (sin tocar Storage → sin CORS)
     try {
-      // Generar PDF en memoria
       final pdfBytes = await PdfService.generateReceiptPdf(payment);
-
-      // Subir PDF a Storage (no-blocking)
-      try {
-        final ref = FirebaseStorage.instance.ref('receipts/${payment.folio}.pdf');
-        await ref.putData(pdfBytes, SettableMetadata(contentType: 'application/pdf'));
-        _uploadedReceiptUrl = await ref.getDownloadURL();
-      } catch (e) {
-        // Continúa sin PDF
-      }
-    } catch (e) {
-      // Continúa sin PDF
+      triggerWebDownload('recibo_${payment.folio}.pdf', pdfBytes, 'application/pdf');
+    } catch (_) {
+      // Si falla el PDF el mensaje de WhatsApp se envía igual
     }
 
-    // Enviar por WhatsApp (no esperar por upload)
+    // Abrir WhatsApp con mensaje de texto
     await _launchWhatsApp(payment, phone);
+
+    // Resetear estado inmediatamente (sin esperar confirmación de WhatsApp)
     if (mounted) setState(() => _sendingWhatsApp = false);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Recibo enviado a WhatsApp'),
+          content: Text('PDF descargado. Adjúntalo en WhatsApp'),
           backgroundColor: Colors.green,
+          duration: Duration(seconds: 4),
         ),
       );
     }
@@ -968,7 +962,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
     msg.writeln('Monto: $amountStr');
     msg.writeln('Folio: ${payment.folio}');
     msg.writeln('Fecha: $dateStr');
-    if (_uploadedReceiptUrl != null) {
+    if (!kIsWeb && _uploadedReceiptUrl != null) {
       msg.writeln('Comprobante: $_uploadedReceiptUrl');
     }
     msg.write('— Aerial Gymnastics Pachuca');
