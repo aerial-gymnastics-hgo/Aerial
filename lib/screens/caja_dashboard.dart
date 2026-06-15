@@ -83,7 +83,7 @@ class _CajaDashboardState extends State<CajaDashboard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('COBRO RÁPIDO', style: GoogleFonts.montserrat(fontWeight: FontWeight.w900, fontSize: 16)),
-            Text('Casa Pädi · ${widget.currentUser.name}', style: GoogleFonts.poppins(fontSize: 10, color: Colors.white54)),
+            Text('Aerial Gymnastics · ${widget.currentUser.name}', style: GoogleFonts.poppins(fontSize: 10, color: Colors.white54)),
           ],
         ),
         backgroundColor: const Color(0xFF1A237E),

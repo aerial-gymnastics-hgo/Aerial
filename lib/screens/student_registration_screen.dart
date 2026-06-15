@@ -151,9 +151,9 @@ class _StudentRegistrationScreenState extends State<StudentRegistrationScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildCredentialRow('👧 Alumna', result['student'].name, result['student'].email, result['studentPassword']),
+            _buildCredentialRow('👧 Alumna', result['studentName'] as String, result['studentEmail'] as String, result['studentPassword'] as String),
             const Divider(color: Colors.white24, height: 24),
-            _buildCredentialRow('👨‍👩‍👧 Tutor', result['parent'].name, result['parent'].email, result['parentPassword']),
+            _buildCredentialRow('👨‍👩‍👧 Tutor', result['parentName'] as String, result['parentEmail'] as String, result['parentPassword'] as String),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(12),

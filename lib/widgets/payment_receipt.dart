@@ -58,7 +58,7 @@ class PaymentReceipt extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Casa Pädi',
+                  'Aerial Gymnastics',
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontSize: 18,

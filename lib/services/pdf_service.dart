@@ -1,7 +1,9 @@
+import 'dart:typed_data';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import '../models/user_model.dart';
+import '../models/payment_model.dart';
 import 'package:intl/intl.dart';
 
 class PdfService {
@@ -26,7 +28,8 @@ class PdfService {
     );
   }
 
-  static Future<void> generateDebtorsPdf(List<User> debtors) async {
+  static Future<void> generateDebtorsPdf(
+      List<User> debtors, Map<String, double> debtAmounts) async {
     final doc = pw.Document();
     final date = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
@@ -36,7 +39,7 @@ class PdfService {
         build: (pw.Context context) => [
           _buildHeader('Reporte de Adeudos', date),
           pw.SizedBox(height: 20),
-          _buildDebtorsTable(debtors),
+          _buildDebtorsTable(debtors, debtAmounts),
         ],
       ),
     );
@@ -50,7 +53,6 @@ class PdfService {
   static Future<void> generateBirthdayPdf(List<User> students) async {
     final doc = pw.Document();
     final date = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    final monthName = DateFormat('MMMM', 'es_ES').format(DateTime.now()); // Necesita inicialización de locale, usaremos inglés o simple por ahora
 
     doc.addPage(
       pw.MultiPage(
@@ -67,6 +69,113 @@ class PdfService {
       onLayout: (PdfPageFormat format) async => doc.save(),
       name: 'Cumpleanos_Mes.pdf',
     );
+  }
+
+  static Future<Uint8List> generateReceiptPdf(Payment payment) async {
+    final doc = pw.Document();
+    final dateFormat = DateFormat('dd/MM/yyyy HH:mm', 'es_MX');
+    final currencyFormat = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
+    final date = dateFormat.format(payment.paidAt);
+
+    doc.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.letter,
+        margin: const pw.EdgeInsets.all(20),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              // Header
+              pw.Center(
+                child: pw.Column(
+                  children: [
+                    pw.Text(
+                      'AERIAL GYMNASTICS',
+                      style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, color: PdfColors.purple),
+                    ),
+                    pw.Text(
+                      'Gimnasia Artística · Pachuca, Hgo.',
+                      style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey),
+                    ),
+                    pw.SizedBox(height: 10),
+                    pw.Text(
+                      'RECIBO DE PAGO',
+                      style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold, letterSpacing: 2),
+                    ),
+                  ],
+                ),
+              ),
+              pw.SizedBox(height: 20),
+              pw.Divider(color: PdfColors.grey300),
+              pw.SizedBox(height: 10),
+
+              // Folio
+              pw.Text(
+                'Folio: ${payment.folio}',
+                style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.purple),
+              ),
+              pw.SizedBox(height: 16),
+
+              // Student Data
+              pw.Text('DATOS DE LA ALUMNA', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: PdfColors.grey)),
+              pw.SizedBox(height: 6),
+              pw.Text('Nombre: ${payment.studentName}', style: const pw.TextStyle(fontSize: 11)),
+              pw.Text('Grupo: ${payment.groupId.toUpperCase()}', style: const pw.TextStyle(fontSize: 11)),
+              pw.SizedBox(height: 16),
+
+              // Payment Detail
+              pw.Text('DETALLE DEL PAGO', style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold, color: PdfColors.grey)),
+              pw.SizedBox(height: 6),
+              pw.Text('Concepto: ${payment.concept}', style: const pw.TextStyle(fontSize: 11)),
+              pw.Text('Método: ${payment.paymentMethod}', style: const pw.TextStyle(fontSize: 11)),
+              pw.Text('Fecha: $date', style: const pw.TextStyle(fontSize: 11)),
+              pw.SizedBox(height: 16),
+
+              pw.Divider(color: PdfColors.grey300),
+              pw.SizedBox(height: 12),
+
+              // Amount
+              pw.Container(
+                padding: const pw.EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                decoration: pw.BoxDecoration(
+                  color: PdfColors.grey100,
+                  border: pw.Border.all(color: PdfColors.grey300),
+                ),
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text(
+                      'TOTAL PAGADO',
+                      style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
+                    ),
+                    pw.Text(
+                      currencyFormat.format(payment.amount),
+                      style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold, color: PdfColors.purple),
+                    ),
+                  ],
+                ),
+              ),
+
+              pw.SizedBox(height: 16),
+              pw.Center(
+                child: pw.Text(
+                  '✓ Pago completado',
+                  style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold, color: PdfColors.green),
+                ),
+              ),
+              pw.Center(
+                child: pw.Text(
+                  'Registrado por: ${payment.registeredBy}',
+                  style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    return doc.save();
   }
 
   static pw.Widget _buildHeader(String title, String date) {
@@ -111,21 +220,20 @@ class PdfService {
     );
   }
 
-  static pw.Widget _buildDebtorsTable(List<User> debtors) {
+  static pw.Widget _buildDebtorsTable(
+      List<User> debtors, Map<String, double> debtAmounts) {
     double totalDebt = 0;
     final data = <List<String>>[];
 
     for (var s in debtors) {
-      final isDebt = s.id.toLowerCase().contains('a') || s.id.toLowerCase().contains('o');
-      if (isDebt) {
-        totalDebt += 1200.0;
-        data.add([
-          s.name,
-          s.group ?? 'N/A',
-          'Mensualidad',
-          '\$1200.0',
-        ]);
-      }
+      final amount = debtAmounts[s.id] ?? 0;
+      totalDebt += amount;
+      data.add([
+        s.name,
+        s.group,
+        'Mensualidad',
+        '\$${amount.toStringAsFixed(2)}',
+      ]);
     }
 
     // Agregar fila de total
@@ -148,12 +256,11 @@ class PdfService {
   static pw.Widget _buildBirthdayTable(List<User> students) {
     return pw.Table.fromTextArray(
       headers: ['Día', 'Nombre', 'Grupo'],
-      data: students.map((s) {
-        final day = (s.name.length * 3) % 28 + 1; // Simulación determinista
+      data: students.where((s) => s.birthDate != null).map((s) {
         return [
-          day.toString(),
+          s.birthDate!.day.toString(),
           s.name,
-          s.group ?? 'N/A',
+          s.group,
         ];
       }).toList(),
       headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),

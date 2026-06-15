@@ -1,25 +1,21 @@
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
-import '../models/user_model.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'storage_service.dart';
 
 class RegistrationService {
   /// Genera contraseña temporal: primeras 4 letras del nombre + año de nacimiento
-  static String generatePassword(String studentName, DateTime birthDate) {
-    final namePart = studentName
+  static String generatePassword(String name, DateTime birthDate) {
+    final namePart = name
         .toLowerCase()
         .replaceAll(RegExp(r'[^a-z]'), '')
         .substring(
             0,
-            studentName.replaceAll(RegExp(r'[^a-zA-Z]'), '').length >= 4
+            name.replaceAll(RegExp(r'[^a-zA-Z]'), '').length >= 4
                 ? 4
-                : studentName.replaceAll(RegExp(r'[^a-zA-Z]'), '').length);
-    final yearPart = birthDate.year.toString();
-    return '$namePart$yearPart';
+                : name.replaceAll(RegExp(r'[^a-zA-Z]'), '').length);
+    return '$namePart${birthDate.year}';
   }
 
-  /// Sanitiza texto para generar emails
   static String _sanitize(String text) => text
       .toLowerCase()
       .replaceAll('á', 'a')
@@ -38,7 +34,8 @@ class RegistrationService {
     return parts.last;
   }
 
-  /// Registra una nueva alumna y su tutor. Retorna un Map con las credenciales generadas.
+  /// Registra una nueva alumna y su tutor vía Cloud Function (admin no se desloguea).
+  /// Retorna un Map con las credenciales generadas para mostrar al admin.
   static Future<Map<String, dynamic>> registerStudentAndParent({
     required String studentName,
     required DateTime birthDate,
@@ -49,7 +46,7 @@ class RegistrationService {
     Uint8List? photoBytes,
     String? photoUrl,
   }) async {
-    // 1. Preparar emails y passwords
+    // Generar credenciales client-side para mostrar al admin
     final studentEmail =
         '${_sanitize(studentName).replaceAll('_', '.')}@aerial.com';
     final parentEmail = tutorEmail.isNotEmpty
@@ -59,23 +56,31 @@ class RegistrationService {
     final studentPassword = generatePassword(studentName, birthDate);
     final parentPassword = generatePassword(tutorName, birthDate);
 
-    final firebaseAuth = fb_auth.FirebaseAuth.instance;
-    final db = FirebaseFirestore.instance;
-
-    fb_auth.UserCredential? studentCred;
     String? finalPhotoUrl = photoUrl;
-    bool photoUploaded = false;
-    String? studentUid;
 
     try {
-      // 2. Crear cuenta de estudiante en Auth
-      studentCred = await firebaseAuth.createUserWithEmailAndPassword(
-        email: studentEmail,
-        password: studentPassword,
-      );
-      studentUid = studentCred.user!.uid;
+      // Crear accounts vía Cloud Function: admin SDK no desloguea al usuario actual
+      final fn = FirebaseFunctions.instance.httpsCallable('registerStudent');
+      final result = await fn.call({
+        'email': studentEmail,
+        'password': studentPassword,
+        'name': studentName,
+        'groupId': group,
+        'birthDate': birthDate.toIso8601String(),
+        'phone': tutorPhone,
+        'parentName': tutorName,
+        'parentPhone': tutorPhone,
+        'parentEmail': parentEmail,
+      });
 
-      // 2.1 Subir foto si existen bytes (Fase 3)
+      final data = result.data as Map<dynamic, dynamic>;
+      if (data['success'] != true) {
+        throw Exception(data['message'] ?? 'Error en el servidor');
+      }
+
+      final studentUid = data['uid'] as String;
+
+      // Subir foto si fue seleccionada
       if (photoBytes != null) {
         try {
           finalPhotoUrl = await StorageService.uploadProfileImage(
@@ -83,105 +88,21 @@ class RegistrationService {
             bytes: photoBytes,
             isStudent: true,
           );
-          photoUploaded = true;
-        } catch (e) {
-          // Si el Storage falla, el registro continúa con la URL default/fallback
-          print('Error al subir foto (continuando registro): $e');
+        } catch (_) {
+          // Registro continúa sin foto
         }
       }
 
-      // 3. Crear cuenta de tutor en Auth
-      final parentCred = await firebaseAuth.createUserWithEmailAndPassword(
-        email: parentEmail,
-        password: parentPassword,
-      );
-      final parentUid = parentCred.user!.uid;
-
-      // 4. Crear modelos User (solo en memoria) usando los Auth UIDs
-      final student = User(
-        id: studentUid,
-        name: studentName,
-        email: studentEmail,
-        role: UserRole.student,
-        group: group,
-        password: studentPassword, // Mantenido solo en memoria
-        birthDate: birthDate,
-        photoUrl: finalPhotoUrl ?? 'https://i.pravatar.cc/150?u=$studentUid',
-        joinDate: DateTime.now(),
-      );
-
-      final parent = User(
-        id: parentUid,
-        name: 'Familia ${_extractSurnames(studentName)}',
-        email: parentEmail,
-        role: UserRole.parent,
-        associatedStudentId: studentUid,
-        password: parentPassword, // Mantenido solo en memoria
-        emergencyContact: tutorPhone,
-      );
-
-      // 5. Escribir a Firestore usando WriteBatch
-      final batch = db.batch();
-
-      // Mapeos limpios (sin "password") directamente aquí
-      final studentMap = {
-        'name': student.name,
-        'email': student.email,
-        'role': student.role.name,
-        'group': student.group,
-        'photoUrl': student.photoUrl,
-        'birthDate': student.birthDate != null
-            ? Timestamp.fromDate(student.birthDate!)
-            : null,
-        'joinDate': student.joinDate != null
-            ? Timestamp.fromDate(student.joinDate!)
-            : null,
-        'parentEmail': parentEmail,
-      };
-
-      final parentMap = {
-        'name': parent.name,
-        'email': parent.email,
-        'role': parent.role.name,
-        'associatedStudentId': parent.associatedStudentId,
-        'emergencyContact': parent.emergencyContact,
-      };
-
-      // Doc en colección 'users' para student
-      batch.set(db.collection('users').doc(studentUid), studentMap);
-
-      // Doc en colección 'users' para parent
-      batch.set(db.collection('users').doc(parentUid), parentMap);
-
-      await batch.commit();
-
-      // 6. Retornar resumen
       return {
-        'student': student,
-        'parent': parent,
+        'studentName': studentName,
+        'studentEmail': studentEmail,
         'studentPassword': studentPassword,
+        'parentName': 'Familia ${_extractSurnames(studentName)}',
+        'parentEmail': parentEmail,
         'parentPassword': parentPassword,
       };
-    } catch (e) {
-      // 7. Rollback: limpiar cuenta auth student e imagen si se crearon
-      if (studentUid != null) {
-        try {
-          // Limpiar archivo de Storage si se subió
-          if (photoUploaded) {
-            await StorageService.deleteProfileImage(uid: studentUid, isStudent: true);
-          }
-
-          // Re-auth como estudiante para luego borrar su cuenta (necesario sin admin SDK)
-          await firebaseAuth.signInWithEmailAndPassword(
-            email: studentEmail,
-            password: studentPassword,
-          );
-          await firebaseAuth.currentUser?.delete();
-        } catch (_) {
-          // Ignoramos errores de rollback para no enmascarar el error original
-        }
-      }
-      rethrow;
+    } on FirebaseFunctionsException catch (e) {
+      throw Exception(e.message ?? 'Error al registrar alumna');
     }
   }
 }

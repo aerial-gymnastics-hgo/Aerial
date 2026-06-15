@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/rendering.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,6 +11,7 @@ import '../models/payment_model.dart';
 import '../models/user_model.dart';
 import '../services/firestore_service.dart';
 import '../services/payment_service.dart';
+import '../services/pdf_service.dart';
 import '../services/receipt_capture_service.dart';
 import '../widgets/payment_receipt.dart';
 
@@ -830,31 +832,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
   Future<void> _sendWhatsApp(Payment payment) async {
     setState(() => _sendingWhatsApp = true);
 
-    // Paso A+B: Capturar imagen del recibo y subirla a Storage (solo una vez)
-    if (!_receiptUploadAttempted) {
-      _receiptUploadAttempted = true;
-      try {
-        final ctx = _receiptKey.currentContext;
-        if (ctx != null) {
-          final boundary =
-              ctx.findRenderObject() as RenderRepaintBoundary;
-          final image = await boundary.toImage(pixelRatio: 2.0);
-          final byteData =
-              await image.toByteData(format: ui.ImageByteFormat.png);
-          final bytes = byteData!.buffer.asUint8List();
-
-          final ref = FirebaseStorage.instance
-              .ref('receipts/${payment.folio}.png');
-          await ref.putData(
-              bytes, SettableMetadata(contentType: 'image/png'));
-          _uploadedReceiptUrl = await ref.getDownloadURL();
-        }
-      } catch (_) {
-        // Continúa sin imagen
-      }
-    }
-
-    // Paso C: Obtener teléfono del tutor
+    // Obtener teléfono del tutor
     final effectivePhone =
         widget.guardianPhone?.isNotEmpty == true
             ? widget.guardianPhone!
@@ -870,9 +848,82 @@ class _PaymentDialogState extends State<PaymentDialog> {
       return;
     }
 
-    // Paso D: Abrir WhatsApp
-    await _launchWhatsApp(payment, effectivePhone);
+    // Resetear URL de recibo para esta sesión de envío
+    _uploadedReceiptUrl = null;
+
+    if (kIsWeb) {
+      // WEB: Generar PDF, subir a Storage, enviar por WhatsApp
+      _generateAndUploadPdfWeb(payment, effectivePhone);
+    } else {
+      // NATIVO: Capturar imagen, subir a Storage, enviar por WhatsApp
+      _captureImageAndSendNative(payment, effectivePhone);
+    }
+  }
+
+  Future<void> _generateAndUploadPdfWeb(Payment payment, String phone) async {
+    try {
+      // Generar PDF en memoria
+      final pdfBytes = await PdfService.generateReceiptPdf(payment);
+
+      // Subir PDF a Storage (no-blocking)
+      try {
+        final ref = FirebaseStorage.instance.ref('receipts/${payment.folio}.pdf');
+        await ref.putData(pdfBytes, SettableMetadata(contentType: 'application/pdf'));
+        _uploadedReceiptUrl = await ref.getDownloadURL();
+      } catch (e) {
+        // Continúa sin PDF
+      }
+    } catch (e) {
+      // Continúa sin PDF
+    }
+
+    // Enviar por WhatsApp (no esperar por upload)
+    await _launchWhatsApp(payment, phone);
     if (mounted) setState(() => _sendingWhatsApp = false);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Recibo enviado a WhatsApp'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  Future<void> _captureImageAndSendNative(Payment payment, String phone) async {
+    // Capturar imagen del recibo (solo una vez)
+    if (!_receiptUploadAttempted) {
+      _receiptUploadAttempted = true;
+      try {
+        final ctx = _receiptKey.currentContext;
+        if (ctx != null) {
+          final boundary = ctx.findRenderObject() as RenderRepaintBoundary;
+          final image = await boundary.toImage(pixelRatio: 2.0);
+          final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+          final bytes = byteData!.buffer.asUint8List();
+
+          final ref = FirebaseStorage.instance.ref('receipts/${payment.folio}.png');
+          await ref.putData(bytes, SettableMetadata(contentType: 'image/png'));
+          _uploadedReceiptUrl = await ref.getDownloadURL();
+        }
+      } catch (_) {
+        // Continúa sin imagen
+      }
+    }
+
+    // Enviar por WhatsApp
+    await _launchWhatsApp(payment, phone);
+    if (mounted) setState(() => _sendingWhatsApp = false);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Abriendo WhatsApp...'),
+          backgroundColor: Colors.blue,
+        ),
+      );
+    }
   }
 
   Future<void> _savePhoneAndSend(Payment payment) async {
@@ -902,8 +953,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
     _savedPhone = phone;
     if (mounted) setState(() => _showPhoneCapture = false);
 
-    await _launchWhatsApp(payment, phone);
-    if (mounted) setState(() => _sendingWhatsApp = false);
+    await _sendWhatsApp(payment);
   }
 
   Future<void> _launchWhatsApp(Payment payment, String phone) async {
@@ -913,8 +963,7 @@ class _PaymentDialogState extends State<PaymentDialog> {
     final amountStr = '\$${payment.amount.toStringAsFixed(0)}';
 
     final msg = StringBuffer();
-    msg.writeln(
-        'Hola, aquí está el comprobante de pago de ${payment.studentName}.');
+    msg.writeln('Hola, aquí está el comprobante de pago de ${payment.studentName}.');
     msg.writeln('Concepto: ${payment.concept}');
     msg.writeln('Monto: $amountStr');
     msg.writeln('Folio: ${payment.folio}');
@@ -935,18 +984,6 @@ class _PaymentDialogState extends State<PaymentDialog> {
           SnackBar(
             content: Text('No se pudo abrir WhatsApp: $e'),
             backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-
-    // Paso E: si la imagen no se pudo subir, avisar con snackbar amarillo
-    if (_receiptUploadAttempted && _uploadedReceiptUrl == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Comprobante enviado sin imagen.'),
-            backgroundColor: Colors.orange,
           ),
         );
       }
