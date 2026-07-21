@@ -7,10 +7,10 @@ class VeranoLandingScreen extends StatelessWidget {
   const VeranoLandingScreen({super.key});
 
   final List<String> _carouselImages = const [
-    'assets/images/israel-lopez-othZ2kLqvb4-unsplash.jpg',
-    'assets/images/brett-wharton-IW3_4JTH39o-unsplash.jpg',
-    'assets/images/atiyeh-fathi-AI2wwbQPcSc-unsplash.jpg',
-    'assets/images/vladimir-fedotov-vWE-czm8Ns0-unsplash.jpg',
+    'assets/images/israel-lopez-othZ2kLqvb4-unsplash.webp',
+    'assets/images/brett-wharton-IW3_4JTH39o-unsplash.webp',
+    'assets/images/atiyeh-fathi-AI2wwbQPcSc-unsplash.webp',
+    'assets/images/vladimir-fedotov-vWE-czm8Ns0-unsplash.webp',
   ];
 
   final List<String> _carouselTitles = const [
@@ -67,7 +67,7 @@ class VeranoLandingScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Image.asset(
-                'assets/images/image-Photoroom.png',
+                'assets/images/image-Photoroom.webp',
                 height: 28,
                 fit: BoxFit.contain,
                 color: Colors.white,
@@ -104,7 +104,7 @@ class VeranoLandingScreen extends StatelessWidget {
               ),
               clipBehavior: Clip.hardEdge,
               child: Image.asset(
-                'assets/images/aerial_logo.png',
+                'assets/images/aerial_logo.webp',
                 height: 72,
                 fit: BoxFit.contain,
               ),
