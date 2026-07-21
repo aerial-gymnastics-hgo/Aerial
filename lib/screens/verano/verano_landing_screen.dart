@@ -6,6 +6,27 @@ import 'package:url_launcher/url_launcher.dart';
 class VeranoLandingScreen extends StatelessWidget {
   const VeranoLandingScreen({super.key});
 
+  final List<String> _carouselImages = const [
+    'assets/images/israel-lopez-othZ2kLqvb4-unsplash.jpg',
+    'assets/images/brett-wharton-IW3_4JTH39o-unsplash.jpg',
+    'assets/images/atiyeh-fathi-AI2wwbQPcSc-unsplash.jpg',
+    'assets/images/vladimir-fedotov-vWE-czm8Ns0-unsplash.jpg',
+  ];
+
+  final List<String> _carouselTitles = const [
+    'Confianza que se construye',
+    'Grupos pequeños, atención real',
+    'Disciplina que dura toda la vida',
+    'Un verano que recordarán siempre',
+  ];
+
+  final List<String> _carouselSubs = const [
+    'Cada habilidad nueva construye autoestima real y duradera.',
+    'Máximo 8 alumnas por grupo, organizadas por edad y nivel.',
+    'La gimnasia entrena el cerebro igual que el cuerpo.',
+    'Más que un curso — una experiencia que las transforma.',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,11 +36,15 @@ class VeranoLandingScreen extends StatelessWidget {
           children: [
             _buildHero(context),
             _buildUrgency(),
+            _buildWhyGymnastics(),
+            _buildGalleryCarousel(),
+            const Divider(height: 1, indent: 16, endIndent: 16),
             _buildPricing(),
             const Divider(height: 1, indent: 16, endIndent: 16),
             _buildGroups(context),
             const Divider(height: 1, indent: 16, endIndent: 16),
             _buildComplementary(),
+            const Divider(height: 1, indent: 16, endIndent: 16),
             _buildContact(context),
           ],
         ),
@@ -41,25 +66,12 @@ class VeranoLandingScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'INSTITUTO',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Color(0xFFD4B8F0),
-                    ),
-                  ),
-                  Text(
-                    'Cedrus',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
+              Image.asset(
+                'assets/images/image-Photoroom.png',
+                height: 28,
+                fit: BoxFit.contain,
+                color: Colors.white,
+                colorBlendMode: BlendMode.srcIn,
               ),
               GestureDetector(
                 onTap: () => Navigator.pushNamed(context, '/login'),
@@ -86,13 +98,19 @@ class VeranoLandingScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Center(
-            child: Image.asset(
-              'assets/images/aerial_logo.png',
-              height: 72,
-              fit: BoxFit.contain,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: Image.asset(
+                'assets/images/aerial_logo.png',
+                height: 72,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Center(
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -211,14 +229,14 @@ class VeranoLandingScreen extends StatelessWidget {
                 text: 'El curso ya comenzó. ',
                 style: TextStyle(
                   fontSize: 11,
-                  color: Color(0xFF92400E),
+                  color: Color(0xFF78350F),
                 ),
                 children: [
                   TextSpan(
                     text: 'Puedes incorporarte con inscripción semanal desde \$1,750.',
                     style: TextStyle(
                       fontSize: 11,
-                      color: Color(0xFF92400E),
+                      color: Color(0xFF78350F),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -299,8 +317,8 @@ class VeranoLandingScreen extends StatelessWidget {
                 flex: 1,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    border: Border.all(color: Colors.grey[200]!),
+                    color: const Color(0xFFF5F3FF),
+                    border: Border.all(color: const Color(0xFFE9D5FF)),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -503,6 +521,204 @@ class VeranoLandingScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildWhyGymnastics() {
+    return Container(
+      color: const Color(0xFF1A0A3C),
+      padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'No es solo deporte.',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+              height: 1.2,
+            ),
+          ),
+          const Text(
+            'Es desarrollo integral.',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFFF472B6),
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'La gimnasia artística trabaja simultáneamente el cuerpo, la mente y el carácter. '
+            'Mientras tu hija aprende a hacer una vertical o a caminar en viga, está desarrollando '
+            'concentración, disciplina y confianza — habilidades que se transfieren directamente '
+            'al salón de clases y a la vida.',
+            style: TextStyle(
+              fontSize: 13,
+              color: Color(0xFFD4B8F0),
+              height: 1.7,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Expanded(
+                child: _statCard(
+                  '40%',
+                  'más concentración en niños que practican deportes de precisión',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _statCard(
+                  '8',
+                  'alumnas máximo por grupo — atención real e individualizada',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _statCard(
+                  '4',
+                  'aparatos de gimnasia artística: salto, barras, viga y piso',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: const Color(0xFF2D1060),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFF6B2FA0)),
+            ),
+            child: const Text(
+              'Mientras la mayoría de los cursos de verano en Pachuca ofrecen recreación general, '
+              'aquí cada semana tiene objetivos técnicos concretos adaptados a la edad y nivel de tu hija.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Color(0xFFE9D5FF),
+                height: 1.6,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statCard(String number, String label) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF2D1060),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(number,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFFF472B6),
+              )),
+          const SizedBox(height: 4),
+          Text(label,
+              style: const TextStyle(
+                fontSize: 10,
+                color: Color(0xFFD4B8F0),
+                height: 1.4,
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGalleryCarousel() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 18, 0, 12),
+          child: Text(
+            'Por qué Aerial este verano',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: const Color(0xFF1A1A1A),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 200,
+          child: PageView.builder(
+            controller: PageController(viewportFraction: 0.88),
+            itemCount: 4,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Stack(
+                    children: [
+                      Image.asset(
+                        _carouselImages[index],
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: 200,
+                      ),
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.65),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 16,
+                        left: 16,
+                        right: 16,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _carouselTitles[index],
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _carouselSubs[index],
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
