@@ -35,6 +35,7 @@ class _VeranoInscripcionScreenState extends State<VeranoInscripcionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -75,9 +76,23 @@ class _VeranoInscripcionScreenState extends State<VeranoInscripcionScreen> {
                 ),
                 _label('Grupo'),
                 DropdownButtonFormField<String>(
-                  value: _grupoSeleccionado,
+                  initialValue: _grupoSeleccionado,
+                  dropdownColor: Colors.white,
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    filled: true,
+                    fillColor: Colors.grey[50],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.grey[200]!),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.grey[200]!),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Color(0xFF6B2FA0), width: 1.5),
+                    ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                   ),
                   items: const [
@@ -125,7 +140,9 @@ class _VeranoInscripcionScreenState extends State<VeranoInscripcionScreen> {
                   ),
                   value: _esAlumnaExistente,
                   onChanged: (v) => setState(() => _esAlumnaExistente = v),
-                  activeColor: const Color(0xFF2D1060),
+                  activeThumbColor: const Color(0xFF2D1060),
+                  tileColor: Colors.grey[50],
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
                 const SizedBox(height: 24),
                 SizedBox(
@@ -211,7 +228,21 @@ class _VeranoInscripcionScreenState extends State<VeranoInscripcionScreen> {
           keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hint,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            hintStyle: TextStyle(color: Colors.grey[400]),
+            filled: true,
+            fillColor: Colors.grey[50],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey[200]!),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey[200]!),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFF6B2FA0), width: 1.5),
+            ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
           ),
           validator: validator,

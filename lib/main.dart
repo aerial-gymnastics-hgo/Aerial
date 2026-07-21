@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'screens/landing_page.dart';
 import 'screens/verano/verano_landing_screen.dart';
 import 'screens/verano/verano_inscripcion_screen.dart';
+import 'screens/verano/verano_acceso_screen.dart';
 import 'services/auth_service.dart';
 import 'services/navigation_service.dart';
 
@@ -96,6 +97,7 @@ class GymManagerApp extends StatelessWidget {
       routes: {
         '/verano': (context) => const VeranoLandingScreen(),
         '/verano/inscripcion': (context) => const VeranoInscripcionScreen(),
+        '/verano/acceso': (context) => const VeranoAccesoScreen(),
       },
     );
   }
@@ -109,7 +111,7 @@ class SessionCheck extends StatefulWidget {
 }
 
 class _SessionCheckState extends State<SessionCheck> {
-  static const _publicRoutes = {'/verano', '/verano/inscripcion'};
+  static const _publicRoutes = {'/verano', '/verano/inscripcion', '/verano/acceso'};
 
   @override
   void initState() {

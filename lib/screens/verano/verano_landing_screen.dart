@@ -74,7 +74,7 @@ class VeranoLandingScreen extends StatelessWidget {
                 colorBlendMode: BlendMode.srcIn,
               ),
               GestureDetector(
-                onTap: () => Navigator.pushNamed(context, '/login'),
+                onTap: () => Navigator.pushNamed(context, '/verano/acceso'),
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: const Color(0x33FFFFFF)),
@@ -642,14 +642,14 @@ class VeranoLandingScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 18, 0, 12),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(16, 18, 0, 12),
           child: Text(
             'Por qué Aerial este verano',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: const Color(0xFF1A1A1A),
+              color: Color(0xFF1A1A1A),
             ),
           ),
         ),
@@ -679,7 +679,7 @@ class VeranoLandingScreen extends StatelessWidget {
                               end: Alignment.bottomCenter,
                               colors: [
                                 Colors.transparent,
-                                Colors.black.withOpacity(0.65),
+                                Colors.black.withValues(alpha: 0.65),
                               ],
                             ),
                           ),
