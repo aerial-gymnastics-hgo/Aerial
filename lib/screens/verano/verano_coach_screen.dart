@@ -16,6 +16,7 @@ class _VeranoCoachScreenState extends State<VeranoCoachScreen> {
   bool _cargando = false;
   List<VeranoInscripcion> _alumnas = [];
   String? _error;
+  Map<String, bool?> _asistenciaHoy = {};
 
   @override
   void initState() {
@@ -39,10 +40,54 @@ class _VeranoCoachScreenState extends State<VeranoCoachScreen> {
             .map((d) => VeranoInscripcion.fromFirestore(d))
             .toList();
       });
+      await _cargarAsistenciaHoy();
     } catch (e) {
       setState(() => _error = 'Error al cargar: $e');
     } finally {
       if (mounted) setState(() => _cargando = false);
+    }
+  }
+
+  Future<void> _cargarAsistenciaHoy() async {
+    final hoy = DateTime.now();
+    final fechaKey = '${hoy.year}-${hoy.month.toString().padLeft(2, '0')}-${hoy.day.toString().padLeft(2, '0')}';
+    final Map<String, bool?> resultado = {};
+    for (final alumna in _alumnas) {
+      if (alumna.id == null) continue;
+      final doc = await FirebaseFirestore.instance
+          .collection('verano_inscripciones')
+          .doc(alumna.id)
+          .collection('asistencia')
+          .doc(fechaKey)
+          .get();
+      resultado[alumna.id!] = doc.exists ? (doc.data()?['presente'] as bool?) : null;
+    }
+    if (mounted) setState(() => _asistenciaHoy = resultado);
+  }
+
+  Future<void> _marcarAsistencia(String inscripcionId, bool presente) async {
+    final hoy = DateTime.now();
+    final fechaKey = '${hoy.year}-${hoy.month.toString().padLeft(2, '0')}-${hoy.day.toString().padLeft(2, '0')}';
+    setState(() => _asistenciaHoy[inscripcionId] = presente);
+    try {
+      await FirebaseFirestore.instance
+          .collection('verano_inscripciones')
+          .doc(inscripcionId)
+          .collection('asistencia')
+          .doc(fechaKey)
+          .set({
+            'presente': presente,
+            'registradoPor': widget.currentUser.id,
+            'hora': FieldValue.serverTimestamp(),
+            'grupo': _grupoSeleccionado,
+          });
+    } catch (e) {
+      if (mounted) setState(() => _asistenciaHoy[inscripcionId] = null);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al guardar: $e'), backgroundColor: Colors.red[700]),
+        );
+      }
     }
   }
 
@@ -67,20 +112,39 @@ class _VeranoCoachScreenState extends State<VeranoCoachScreen> {
         children: [
           Container(
             color: const Color(0xFF2D1060),
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _grupoChip('mexico', '🇲🇽 México'),
-                  const SizedBox(width: 8),
-                  _grupoChip('inglaterra', '🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra'),
-                  const SizedBox(width: 8),
-                  _grupoChip('portugal', '🇵🇹 Portugal'),
-                  const SizedBox(width: 8),
-                  _grupoChip('noruega', '🇳🇴 Noruega'),
-                ],
-              ),
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: Text(
+                    _fechaHoy(),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFFD4B8F0),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _grupoChip('mexico', '🇲🇽 México'),
+                        const SizedBox(width: 8),
+                        _grupoChip('inglaterra', '🏴󠁧󠁢󠁥󠁮󠁧󠁿 Inglaterra'),
+                        const SizedBox(width: 8),
+                        _grupoChip('portugal', '🇵🇹 Portugal'),
+                        const SizedBox(width: 8),
+                        _grupoChip('noruega', '🇳🇴 Noruega'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           Expanded(child: _buildContenido()),
@@ -188,23 +252,53 @@ class _VeranoCoachScreenState extends State<VeranoCoachScreen> {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: a.estatus == 'confirmada' ? const Color(0xFFD1FAE5) : const Color(0xFFFEF3C7),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              a.estatus == 'confirmada' ? 'Confirmada' : 'Pendiente',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w500,
-                color: a.estatus == 'confirmada' ? const Color(0xFF065F46) : const Color(0xFF92400E),
-              ),
-            ),
-          ),
+          a.id != null
+              ? Row(mainAxisSize: MainAxisSize.min, children: [
+                  _botonAsistencia(a.id!, true),
+                  const SizedBox(width: 6),
+                  _botonAsistencia(a.id!, false),
+                ])
+              : const SizedBox.shrink(),
         ],
       ),
     );
+  }
+
+  Widget _botonAsistencia(String id, bool presente) {
+    final estado = _asistenciaHoy[id];
+    final activo = estado == presente;
+    return GestureDetector(
+      onTap: () => _marcarAsistencia(id, presente),
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: activo
+              ? (presente ? const Color(0xFF25D366) : const Color(0xFFEF4444))
+              : Colors.grey[100],
+          border: Border.all(
+            color: activo
+                ? (presente ? const Color(0xFF25D366) : const Color(0xFFEF4444))
+                : Colors.grey[300]!,
+          ),
+        ),
+        child: Icon(
+          presente ? Icons.check : Icons.close,
+          size: 18,
+          color: activo ? Colors.white : Colors.grey[400],
+        ),
+      ),
+    );
+  }
+
+  String _fechaHoy() {
+    final dias = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+    final meses = [
+      'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio',
+      'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+    ];
+    final hoy = DateTime.now();
+    return '${dias[hoy.weekday - 1]} ${hoy.day} de ${meses[hoy.month - 1]}';
   }
 }
