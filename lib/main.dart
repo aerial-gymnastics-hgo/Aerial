@@ -109,13 +109,24 @@ class SessionCheck extends StatefulWidget {
 }
 
 class _SessionCheckState extends State<SessionCheck> {
+  static const _publicRoutes = {'/verano', '/verano/inscripcion'};
+
   @override
   void initState() {
     super.initState();
     _checkSession();
   }
 
-  void _checkSession() async {
+  Future<void> _checkSession() async {
+    // Leer la ruta con la que arrancó la app
+    final uri = Uri.base; // en Flutter Web, Uri.base es la URL real del browser
+    final path = uri.fragment.isNotEmpty
+        ? uri.fragment.split('?').first  // saca '/verano' de '#/verano'
+        : uri.path;
+
+    // Si es una ruta pública, no redirigir
+    if (_publicRoutes.any((r) => path == r || path.startsWith('$r/'))) return;
+
     try {
       final authService = AuthService();
       final user = await authService.checkSession().timeout(const Duration(seconds: 3), onTimeout: () => null);
