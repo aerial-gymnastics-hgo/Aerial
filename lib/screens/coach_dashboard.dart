@@ -21,6 +21,7 @@ import 'schedule_grid_view.dart';
 import '../widgets/attendance_button.dart';
 import '../services/notification_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'verano/verano_coach_screen.dart';
 
 class CoachDashboard extends StatefulWidget {
   final User currentUser;
@@ -145,6 +146,16 @@ class _CoachDashboardState extends State<CoachDashboard> {
           ),
           iconTheme: const IconThemeData(color: Colors.white),
           actions: [
+            IconButton(
+              icon: const Icon(Icons.wb_sunny_outlined),
+              tooltip: 'Verano 2026',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => VeranoCoachScreen(currentUser: widget.currentUser),
+                ),
+              ),
+            ),
             _buildNotificationBadge(primaryColor),
             StatefulBuilder(
               builder: (context, setIcon) => IconButton(
