@@ -98,5 +98,22 @@ service cloud.firestore {
     match /metrics/{metricId} {
       allow read, write: if isAdmin();
     }
+
+    // ── Verano inscripciones ────────────────────────────────────────────────────
+    // Público: crear inscripción (visitante sin cuenta al inscribirse)
+    // Staff y coaches: leer todas las inscripciones
+    // Tutor: leer solo la suya (por teléfono — validado en cliente)
+    match /verano_inscripciones/{inscripcionId} {
+      allow create: if true;
+      allow read:   if isStaff() || isAuth();
+      allow update, delete: if isStaff();
+
+      // Subcolección de asistencia diaria
+      match /asistencia/{fechaId} {
+        allow read:          if isStaff();
+        allow create, update: if isCoach();
+        allow delete:        if isAdmin();
+      }
+    }
   }
 }
