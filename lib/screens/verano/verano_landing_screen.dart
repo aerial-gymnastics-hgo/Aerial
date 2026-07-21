@@ -85,27 +85,11 @@ class VeranoLandingScreen extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const Center(
-            child: Column(
-              children: [
-                Text(
-                  'AERIAL',
-                  style: TextStyle(
-                    fontSize: 26,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 2.0,
-                  ),
-                ),
-                Text(
-                  'GYMNASTICS',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFFD4B8F0),
-                    letterSpacing: 4.0,
-                  ),
-                ),
-              ],
+          Center(
+            child: Image.asset(
+              'assets/images/aerial_logo.png',
+              height: 72,
+              fit: BoxFit.contain,
             ),
           ),
           const SizedBox(height: 16),
