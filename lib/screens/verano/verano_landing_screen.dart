@@ -184,7 +184,7 @@ class VeranoLandingScreen extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () => Navigator.pushNamed(context, '/verano/inscripcion'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE91E8C),
                 shape: RoundedRectangleBorder(
