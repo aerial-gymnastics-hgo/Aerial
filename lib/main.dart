@@ -4,6 +4,7 @@ import 'screens/landing_page.dart';
 import 'screens/verano/verano_landing_screen.dart';
 import 'screens/verano/verano_inscripcion_screen.dart';
 import 'screens/verano/verano_acceso_screen.dart';
+import 'screens/verano/verano_portal_screen.dart';
 import 'services/auth_service.dart';
 import 'services/navigation_service.dart';
 
@@ -98,6 +99,7 @@ class GymManagerApp extends StatelessWidget {
         '/verano': (context) => const VeranoLandingScreen(),
         '/verano/inscripcion': (context) => const VeranoInscripcionScreen(),
         '/verano/acceso': (context) => const VeranoAccesoScreen(),
+        '/verano/portal': (context) => const VeranoPortalScreen(),
       },
     );
   }
@@ -111,7 +113,12 @@ class SessionCheck extends StatefulWidget {
 }
 
 class _SessionCheckState extends State<SessionCheck> {
-  static const _publicRoutes = {'/verano', '/verano/inscripcion', '/verano/acceso'};
+  static const _publicRoutes = {
+    '/verano',
+    '/verano/inscripcion',
+    '/verano/acceso',
+    '/verano/portal',
+  };
 
   @override
   void initState() {
